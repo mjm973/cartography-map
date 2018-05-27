@@ -33,4 +33,14 @@ function mouseDragged() {
 }
 ```
 
-We also add a button outside our canvas using p5.dom's ```createButton``` to clear the current path, as well as one to submit it.
+We also add a button outside our canvas using p5.dom's ```createButton``` to clear the current path.
+
+#### Syncing the paths
+
+Server time! The Node-Express server is set up with two routes. The default ```/``` route serves a version of the map that shows only your own path. Additionally, the ```/all``` route displays real-time updates of all paths, from the moment it was loaded onwards. Using socket.io, we can emit events and listen for them.
+
+Each instance of the map is assigned a unique id (thanks socket.io), as well as a random color to differentiate between participants.
+
+Every time a path adds a point, it emits a ```'point'``` event that relays its ```id```, ```color```, as well as ```x``` and ```y``` coordinates. The coordinates are normalized to account for different screen sizes. The event and its data is relayed from the server to all clients. ```/``` clients ignore the event, while ```/all``` clients listen to it and update their map accordingly (they ignore events tagged with their own id).
+
+Pressing the clear button clears the path locally, and it sends a ```'clear'``` event with the ```id``` of the socket to clear the path in remote clients, as well.

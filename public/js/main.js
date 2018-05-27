@@ -14,13 +14,3 @@ function toggleFullScreen() {
   }
 }
 // end of Mozilla code
-
-document.addEventListener('DOMContentLoaded', function(e) {
-  // toggleFullScreen();
-  let cnvCont = document.getElementById('map-container');
-  cnvCont.addEventListener('touchmove', (e) => {
-    if (e.touches.length < 2) {
-      e.preventDefault();
-    }
-  }, false);
-});

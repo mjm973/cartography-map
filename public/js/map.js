@@ -1,8 +1,10 @@
 let mapImg;
 
-let path = [];
+let paths = {}
 let drawing = false;
 let fullscreen = false;
+
+let socket = io.connect();
 
 const inBounds = (x, y) => {
   return !(x < 0 || y < 0 || x > width || y > height);
@@ -24,23 +26,33 @@ const buildQuery = () => {
   return query;
 }
 
+const clearPath = () => {
+  paths[socket.id].path = [];
+
+  socket.emit('clear', socket.id);
+}
+
 const postPath = () => {
-  let len = path.length;
-  if (len < 2) {
-    return;
-  }
+  // let len = path.length;
+  // if (len < 2) {
+  //   return;
+  // }
+  //
+  // let query = buildQuery();
+  //
+  // path = [];
+}
 
-  let query = buildQuery();
+const addPoint = (_x, _y) => {
+  let x = _x/width;
+  let y = _y/height;
 
-
-
-  // console.log(query);
-
-  path = [];
+  paths[socket.id].path.push(createVector(x, y));
+  socket.emit('point', paths[socket.id].color, x, y);
 }
 
 function preload() {
-  mapImg = loadImage('/static/img/map.png');
+  mapImg = loadImage('/static/img/world-map.jpg');
 }
 
 function setup() {
@@ -54,20 +66,20 @@ function setup() {
   let cnvCont = document.getElementById('map-container');
   cnvCont.appendChild(cnv.elt);
 
-  let btn = createButton('New');
+  let btn = createButton('Clear');
   // btn.class('abs bottom right');
   btn.mousePressed(() => {
-    path = [];
+    clearPath();
   });
 
-  let snd = createButton('Send');
-  snd.mousePressed(() => {
-    postPath();
-  });
+  // let snd = createButton('Send');
+  // snd.mousePressed(() => {
+  //   postPath();
+  // });
 
   let btnCont = document.getElementById('button-container');
   btnCont.appendChild(btn.elt);
-  btnCont.appendChild(snd.elt);
+  // btnCont.appendChild(snd.elt);
 
   // frameRate(15);
 }
@@ -75,15 +87,25 @@ function setup() {
 function draw() {
   image(mapImg, 0, 0, width, height);
 
-  stroke(255, 0, 0);
-  fill(255);
   strokeWeight(5);
 
-  for (let i = 0; i < path.length - 1; ++i) {
-    line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+  for (let p in paths) {
+    let path = paths[p].path;
+    let col = paths[p].color;
 
-    // ellipse(path[i].x, path[i].y, 5, 5);
+    stroke(col);
+    fill(col);
+
+    for (let i = 0; i < path.length - 1; ++i) {
+      line(path[i].x*width, path[i].y*height, path[i+1].x*width, path[i+1].y*height);
+    }
   }
+
+  // for (let i = 0; i < path.length - 1; ++i) {
+  //   line(path[i].x, path[i].y, path[i+1].x, path[i+1].y);
+  //
+  //   // ellipse(path[i].x, path[i].y, 5, 5);
+  // }
 }
 
 function mousePressed() {
@@ -91,19 +113,24 @@ function mousePressed() {
     // toggleFullScreen();
   }
 
+  if (paths[socket.id] === undefined) {
+    paths[socket.id] = {color: [random(255), random(255), random(255)], path: []};
+  }
+
   if (inBounds(mouseX, mouseY)) {
     // console.log('start');
-    if (path.length == 0) {
-      path.push(createVector(mouseX, mouseY));
+    if (paths[socket.id].path.length == 0) {
+      addPoint(mouseX, mouseY);
     }
     drawing = true;
   }
 }
 
 function mouseDragged() {
-  if (drawing && touches.length < 2) {
+  if (drawing && touches.length < 2
+    && inBounds(mouseX, mouseY)) {
     // console.log('hey');
-    path.push(createVector(mouseX, mouseY));
+    addPoint(mouseX, mouseY);
   }
 }
 
@@ -112,3 +139,42 @@ function mouseReleased() {
   drawing = false;
   // path = [];
 }
+
+document.addEventListener('DOMContentLoaded', function(e) {
+  // toggleFullScreen();
+  let cnvCont = document.getElementById('map-container');
+  cnvCont.addEventListener('touchmove', (e) => {
+    if (e.touches.length < 2) {
+      e.preventDefault();
+    }
+  }, false);
+
+  let master = document.getElementById('data').dataset.master === '1';
+  console.log(master ? 'is master' : 'rekt');
+
+  if (master) {
+    socket.on('point', (id, color, x, y) => {
+      if (id === socket.id) {
+        return;
+      }
+
+      console.log(`point! ${id} at ${x},${y}`);
+
+      if (paths[id] === undefined) {
+        paths[id] = {color: color, path: []};
+      }
+
+      paths[id].path.push(createVector(x, y));
+    })
+
+    socket.on('clear', (id) => {
+      if (paths[id] !== undefined) {
+        paths[id].path = [];
+      }
+    });
+  }
+  //
+  // console.log(socket);
+  // paths[socket.id] = {color: [255, 0, 0], path: []};
+  // console.log(paths);
+});
