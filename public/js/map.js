@@ -119,7 +119,7 @@ function mousePressed() {
 
   if (inBounds(mouseX, mouseY)) {
     // console.log('start');
-    if (paths[socket.id].path.length == 0) {
+    if (paths[socket.id].path.length == 0 && touches.length < 2) {
       addPoint(mouseX, mouseY);
     }
     drawing = true;
