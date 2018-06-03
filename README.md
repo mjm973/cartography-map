@@ -73,7 +73,51 @@ Luckily, the fine folks at [Mapshaper](mapshaper.org) feel our pain and provide 
 ```
 id-field=NAME
 ```
+With this, our SVG map is generated and each country polygon has the country's name as its id.
 
 Figuring out what data comes with the shapefile and how it is labeled involves looking through the ```.dbf``` file included (it's some ancient database format). [DBFOpener](dbfopener.com) allows us to inspect the file in a readable format in our browser.
 
 #### From data to experience
+
+Once the map has country names attached to it, we can start tracking a journey. Using an event, we can determine which country was selected, apply a style to it, and make a list of our travels. The country is appended to two lists: a ```journey``` array that will hold all the data for submission, and a list that is rendered in the HTML with the selected countries in the order they were visited.
+
+- ```addCountry``` adds the selected country to the end of our lists. It checks that we aren't adding the same country twice in a row, creates a list element for the user, and adds the entry to the ```journey``` array.
+- ```popCountry``` is the opposite: it pops the last country from ```journey``` and removes it from the list. It also checks if ```journey``` still includes the removed country, and deselects the country if it doesn't.
+- ```remCountry``` removes countries at arbitrary positions. It leaves a ```null``` entry in ```journey``` so that we don't mess up the indexing and we can remove as many countries as we want this way (we'll clean up the array on submission). Of course, it also checks for deselection.
+
+To implement this, we have three main points of interaction:
+
+- A double tap gesture to select countries in the map using ```addCountry```. To do so, we set a timeout after the first tap and we check that the second tap comes alone (i.e. we aren't pinching the screen):
+
+  ```javascript
+  country.addEventListener('touchstart', (e) => {
+    // New taps reset our timeout, even when it's multiple fingers
+    if (!tap || e.touches.length > 1) {
+      tap = setTimeout(() => {
+        tap = null;
+      }, 300);
+    } else {
+      // If the second tap comes from a single finger, we clear the timer and add the country
+      clearTimeout(tap);
+      tap = null;
+
+      e.preventDefault();
+      addCountry(country);
+    }
+  });
+  ```
+
+- An ```Undo``` button. This just fires the ```popCountry``` function.
+- An event listener on the country list elements. For now, clicking on the list element removes it, but this can be easily adapted to a remove button or any other event-based input. The event fires ```remCountry``` on the country we want to remove.
+
+#### More Data: Tags and Flags
+
+Natural Earth unfortunately doesn't seem to have anything but map data, so I had to find another database to work with in tandem. Turns out cristiroma on GitHub had a very handy [dataset](https://github.com/cristiroma/countries) which solved two issues: linking countries to flags and determining "canonical" coordinates for each country.
+
+The data set wasn't perfect, though, so I had to edit some of the entries manually for a near-perfect match. Using JavaScript's ```Array.includes```, ```Array.map``` and ```Array.filter``` I could quickly determine the mismatching countries to edit. In the end, only 5 regions from Natural Earth's map data are left without a flag.
+
+With the data ready, adding it to the existing app was straightforward.
+
+We use the same iteration that set up the country paths' ids in place. For the tags, we create new ```div```s and append then to the document with the country name inside. We make sure we give them a ```hidden``` class so they are invisible. Then, in the country events, we remove their class on hover/touch, and add it again once the hover/touch is done. We also update their inline style so they pop up where we touched.
+
+For the flags, we simply pass in the flag filename to the event binder function ```addCountryEvents```. That way, when we add a country to our path we can make sure the appended entry in the list includes an ```img``` tag that loads up the proper country flag.

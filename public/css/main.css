@@ -3,6 +3,48 @@ html, body {
   height: 100%;
   margin: 0;
   overflow-y: hidden;
+
+  touch-action: manipulation;
+}
+
+path:hover {
+  fill: red;
+}
+
+path.selected {
+  fill: blue;
+}
+
+.flag {
+  max-height: 40px;
+}
+
+.tag-text {
+  fill: blue;
+  alignment-baseline: middle;
+  dominant-baseline: middle;
+
+  color: white;
+}
+
+div.tag-bg {
+  fill: black;
+  /* width: 150px; */
+  height: 25px;
+  padding: 3px;
+  alignment-baseline: middle;
+
+  background-color: black;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  touch-action: none;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .full-h {
