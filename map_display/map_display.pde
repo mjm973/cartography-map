@@ -1,11 +1,15 @@
 import http.requests.*;
-import java.util.regex.*;
 
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
 JSONArray journeys; // Our data!
 
 float scaleFactor; // Caching the math to rescale our svg
+
+int animationIndex = 0; // Used to keep track of when to animate what
+double animationLastTick = 0; // Used to keep track of the last time the index increased
+
+// === GLOBAL PARAMETERS ===
 
 float syncTime = 4; // How long between syncs?
 // Color at 1 visit?
@@ -18,6 +22,7 @@ int maxG = 94;
 int maxB = 28;
 int maxTally = 10; // How many visits to reach maxColor?
 boolean fromWhite = false; // Override min color with white?
+int animationPathTime = 1000; // Time it takes to travel between two countries, in ms
 
 void setup() {
   size(1200, 600);
@@ -34,6 +39,7 @@ void setup() {
     countries.put(c.name, c);
   }
   
+  // Mathemagics to properly scale our map to the display size
   float svgAspect = map.width/map.height;
   float scaledFullHeight = svgAspect*height;
   if (scaledFullHeight > width) {
@@ -53,10 +59,17 @@ void draw() {
     // diableStyle allows us to override the SVG's built-in styling
     c.disableStyle();
     noStroke();
-    fill(mapColor(c.count, false));
+    fill(mapColor(c.count));
     
     c.draw();
   }
+  
+  if (millis() - animationLastTick >= animationPathTime) {
+    animationLastTick += animationPathTime;
+    ++animationIndex;
+  }
+  
+  animatePoints();
 
   // Every now and then, query the server on the journeys submitted
   if (frameCount % (int)syncTime*frameRate == 0) {

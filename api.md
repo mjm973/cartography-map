@@ -42,3 +42,4 @@ Here are some global parameters:
 | `minR`, `minG`, `minB` | `int`     | Define color for countries with a single visit (lightest/minimum)        |
 | `maxR`, `maxG`, `maxB` | `int`     | Define color for countries with `>maxTally` visits (darkest/maximum)     |
 | `fromWhite`            | `boolean` | If `true`, min color defaults to white                                   |
+| `animationPathTime`    | `int`     | Time (in milliseconds) it takes to trace a bath between two countries    |

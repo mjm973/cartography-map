@@ -1,8 +1,8 @@
 // Class to encapsulate country rendering funtionality
 class Country {
   public String name;
-  //public float lon;
-  //public float lat;
+  public float lon;
+  public float lat;
   PShape shape;
 
   int count = 0;

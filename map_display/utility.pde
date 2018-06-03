@@ -90,3 +90,42 @@ void requestUpdate(JSONArray json) {
     
   }
 }
+
+// Function to animate moving planes/points/things across the paths
+void animatePoints() {
+  // Make sure we have retrieved journey dtaa already!
+  if (journeys == null) {
+    return;
+  }
+  
+  // Animations are in sync; What point of the travel are we at?  
+  float t = (float)(millis() % animationPathTime) / (float)animationPathTime;
+  
+  // Iterate over our data
+  for (int i = 0; i < journeys.size(); ++i) {
+    // Let's look at our journey
+    JSONArray journey = journeys.getJSONArray(i);
+    // Now, let's look at every point
+    for (int j = 0; j < journey.size(); ++j) {
+      // What's our current travel? N countries mean N - 1 travels
+      int travelIndex = animationIndex % (journey.size() - 1);
+      // From where?
+      JSONObject fromData = journey.getJSONObject(travelIndex);
+      PVector from = new PVector(
+        fromData.getFloat("lon"), 
+        fromData.getFloat("lat"));
+      // To where?
+      JSONObject toData = journey.getJSONObject(travelIndex + 1);
+      PVector to = new PVector(
+        toData.getFloat("lon"), 
+        toData.getFloat("lat"));
+      // So where are we now?
+      float x = constrain(map(t, 0, 1, from.x, to.x), 0, 1);
+      float y = constrain(map(t, 0, 1, from.y, to.y), 0, 1);
+      // Finally!
+      noStroke();
+      fill(187, 16, 36);
+      ellipse(map.width * x, map.height * y, 10, 10);
+    }
+  }
+}

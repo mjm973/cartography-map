@@ -126,7 +126,7 @@ For the flags, we simply pass in the flag filename to the event binder function 
 
 With this new version of the map, the server's routes and functions had to change. The server now exposes an API that allows the map clients to submit their journeys via `POST` request. The `'/api/submit'` route takes JSON data from the client, which waits for a successful response before clearing its journey in the client map. The API also allows the Display Application to fetch the full journey data to display it on the screen/projection via the `'/api/sync'` route. A special route, `'/api/clear'` would allow the crew to reset the journey data without restarting the server, if the need should arise.
 
-The data is stored as a 2D array of JavaScript objects. Each journey is an array, and each country in that array is an object with `name`, `lon` and `lat` fields. Submissions simply push new entryes onto the array, and sync requests prompt the server to send the full journey data to the Display application.
+The data is stored as a 2D array of JavaScript objects. Each journey is an array, and each country in that array is an object with `name`, `lon` and `lat` fields (both normalized for easy use!). Submissions simply push new entries onto the array, and sync requests prompt the server to send the full journey data to the Display application.
 
 #### Mapping the full picture
 
@@ -135,3 +135,7 @@ To make the Display App, I chose to work on Processing. Processing supports Syph
 The app loads the same SVG map as the web client onto a `PShape` object. However, to style the individual countries it was necessary to use the shape's `getChild` method to access each country's path and name (found as `PShape.name`, it happens to pull the element's `id` field). With that set, we could now render and style countries individually, getting us closer to the heatmap half of the app.
 
 To fetch the data, we used the HTTP Requests for Processing library to make and configure a `GetRequest` and finally retrieve our data. Processing's `parseJSONArray` function (not `parseJSONObject`, because we are dealing with arrays here!) returns our data as a `JSONArray` object, which we can then iterate over to count the number of times a country has been visited and save it into a `HashMap`. This makes querying the values by country really easy when we color the map. In doing so, we wrap each country `PShape` inside a `Country` object to streamline its rendering and tallying.
+
+#### Tracing the paths
+
+Animation time! To animate the travels, we needed some kind of timer and variables to keep track of the animation's state. Processing's `millis` would be our de-facto timer: by keeping track of `animationLastTick` and defining an `animationPathTime`, we can set a timer to increase `animationIndex` every, say, 1 second and thus move from one path segment to the next. The idea is that every "tick", we draw the path from one country to the next, and we keep going until reaching the end of the journey. Thansk to our normalized `lon` and `lat` fields from our client submissions, intermolating and drawing our journeys in the map becomes super simple! Just take the normalized `lon` and `lat`, multiply by the map's `width` and `height` and done! (All hail normalization).
