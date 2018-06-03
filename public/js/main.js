@@ -41,7 +41,7 @@ const addCountry = (c, flag) => {
 // Helper to undo last country added
 const popCountry = () => {
   let country = journey.pop();
-  if (!journey.includes(country)) {
+  if (!journey.includes(country) && country !== null) {
     document.getElementById(country).classList.remove('selected');
   }
 
@@ -117,22 +117,22 @@ const addCountryEvents = (country, tag, flag) => {
   });
 }
 
-// Helper to convert from (longitude, latitude) to SVG (x,y) coordinates
+// Helper to convert from (longitude, latitude) to normalized SVG (x,y) coordinates
 const earthToSvg = (_lon, _lat) => {
-  console.log(typeof _lon, typeof _lat);
+  // console.log(typeof _lon, typeof _lat);
   let lon = parseFloat(_lon);
   let lat = parseFloat(_lat);
-  console.log(typeof lon, typeof lat);
+  // console.log(typeof lon, typeof lat);
 
   let tx = (lon + 180) / 360;
   let ty = 1 - (lat + 90) / 180;
-  let mapSvg = document.getElementById('map-svg');
-  let w = mapSvg.getAttribute('width');
-  let h = mapSvg.getAttribute('height');
+  // let mapSvg = document.getElementById('map-svg');
+  // let w = mapSvg.getAttribute('width');
+  // let h = mapSvg.getAttribute('height');
 
   return {
-    x: parseFloat(w)*tx,
-    y: parseFloat(h)*ty
+    x: tx,
+    y: ty
   };
 }
 
@@ -199,6 +199,14 @@ const postJourney = () => {
   // Remove leftover null elements from our journey
   let cleanJourney = journey.filter((entry) => {
     return entry !== null;
+  }).map((entry) => {
+    let country = document.getElementById(entry);
+    let coord = earthToSvg(country.dataset.lon, country.dataset.lat);
+    return {
+      name: entry,
+      lon: coord.x,
+      lat: coord.y
+    }
   });
   // POST data to the server
   let data = JSON.stringify(cleanJourney);

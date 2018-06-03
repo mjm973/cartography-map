@@ -10,6 +10,7 @@ app.set('view engine', 'pug');
 app.use('/static', express.static(path.join(__dirname, 'public')))
 app.use('/views', express.static(path.join(__dirname, 'views')))
 app.use(express.json())
+app.use(express.urlencoded())
 
 // Journey data master object - to keep track of all journeys and re-sync display app if needed
 let journeys = [];
@@ -33,9 +34,27 @@ app.post('/api/submit', (cReq, cRes) => {
   cRes.send('yay')
 });
 
-// API sync route: used by the display app to retrieve the journey data
+// API sync route: used by the display app to retrieve the full journey data
 app.get('/api/sync', (cReq, cRes) => {
-  cRes.json(journeys)
+  console.log("Sync request received!")
+  // Display App expects a 2D array, so we send a nested empy array if journeys is empty
+  cRes.json(journeys.length === 0 ? [[]] : journeys)
+})
+
+// API update route: used by the display app to retrieved new journey data
+app.post('/api/update', (cRes, cReq) => {
+  console.log('Update request received!')
+  // App should tell us when it last updated
+  let count = cReq.body.count
+  if (count !== undefined) {
+    // We take only the stuff that comes after our last update
+    let data = [];
+    for (let i = count; i < journeys.length; ++i) {
+      data.push(journeys[i]);
+    }
+    // And we send it!
+    cRes.json(data.length === 0 ? [[]] : data)
+  }
 })
 
 // API clear route: clears all journeys the server has recorded

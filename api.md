@@ -24,7 +24,8 @@ Currently, the server supports the following routes:
 |:---------------:|:------:|------------------------------------------------------------------------|
 | `'/'`           |`GET`   | Serves the client-side map for audience users                          |
 | `'/api/submit'` |`POST`  | Receives journey data sent by users in JSON format                     |
-| `'/api/sync'`   |`GET`   | Used by the Display App to retrieve the journey data                   |
+| `'/api/sync'`   |`GET`   | Used by the Display App to retrieve the full journey data              |
+| `'/api/update'` |`POST`  | Used by the Display App to retrieve only new journey data              |
 | `'/api/clear'`  |`GET`   | Allows clearing the `journeys` array if needed, and redirects to `'/'` |
 | `'/*'`          |`GET`   | Catch-all, redirects any other request to `'/'`                        |
 
