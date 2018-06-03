@@ -7,6 +7,18 @@ JSONArray journeys; // Our data!
 
 float scaleFactor; // Caching the math to rescale our svg
 
+float syncTime = 4; // How long between syncs?
+// Color at 1 visit?
+int minR = 14;
+int minG = 223;
+int minB = 65;
+// Color at maxTally visits?
+int maxR = 6;
+int maxG = 94;
+int maxB = 28;
+int maxTally = 10; // How many visits to reach maxColor?
+boolean fromWhite = false; // Override min color with white?
+
 void setup() {
   size(1200, 600);
   map = loadShape("countries.svg");
@@ -47,7 +59,7 @@ void draw() {
   }
 
   // Every now and then, query the server on the journeys submitted
-  if (frameCount % 240 == 0) {
+  if (frameCount % (int)syncTime*frameRate == 0) {
     requestSync();
   }
 }

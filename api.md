@@ -31,4 +31,14 @@ Currently, the server supports the following routes:
 
 ### Display Application
 
-=== IN PROGRESS ===
+The display application runs as a Processing sketch. It uses the HTTP Requests for Processing library to interface with the server and fetch the journey data. The app loads the same SVG file used in the client web app into a `PShape` object and splits it for further manipulation.
+
+Here are some global parameters:
+
+| Name                   | Type      | Use                                                                      |
+|:----------------------:|:---------:|--------------------------------------------------------------------------|
+| `syncTime`             | `float`   | Approximate time in seconds between sync requests to server              |
+| `maxTally`             | `int`     | Number of visits at which a country will reach its darkest/maximum color |
+| `minR`, `minG`, `minB` | `int`     | Define color for countries with a single visit (lightest/minimum)        |
+| `maxR`, `maxG`, `maxB` | `int`     | Define color for countries with `>maxTally` visits (darkest/maximum)     |
+| `fromWhite`            | `boolean` | If `true`, min color defaults to white                                   |

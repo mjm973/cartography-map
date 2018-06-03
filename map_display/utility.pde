@@ -9,23 +9,23 @@ void clearHeatmap() {
 // Utility function to map colors depending on amount of times visited
 // Set fromWhite to false to use the lightest green (14, 223, 65) as a starting point
 // Set fromWhite to true to simple interpolate from white to darkest green (6, 94, 28)
-color mapColor(int count, boolean fromWhite) {
+color mapColor(int count) {
   if (!fromWhite) {
     if (count == 0) {
       return color(255, 255, 255);
     } else {
       return color(
-        map(count, 0, 10, 14, 6), 
-        map(count, 0, 10, 223, 94), 
-        map(count, 0, 10, 65, 28)
+        map(count, 0, maxTally, minR, maxR), 
+        map(count, 0, maxTally, minG, maxG), 
+        map(count, 0, maxTally, minB, maxB)
         );
     }
   }
 
   return color(
-    map(count, 0, 10, 255, 6), 
-    map(count, 0, 10, 255, 94), 
-    map(count, 0, 10, 255, 28)
+    map(count, 0, maxTally, 255, maxR), 
+    map(count, 0, maxTally, 255, maxG), 
+    map(count, 0, maxTally, 255, maxB)
     );
 }
 
