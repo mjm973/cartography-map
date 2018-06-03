@@ -2,7 +2,7 @@ let tap = null; // To determine whether we have a single or double tap
 let journey = []; // Keeps track of the countries selected to be sent to the server
 
 // Helper to add a country to the journey array and list
-let addCountry = (c, flag) => {
+const addCountry = (c, flag) => {
   // Style the country
   c.classList.add('selected');
   // Add it but only if it isn't already the latest point in the journey
@@ -39,7 +39,7 @@ let addCountry = (c, flag) => {
 }
 
 // Helper to undo last country added
-let popCountry = () => {
+const popCountry = () => {
   let country = journey.pop();
   if (!journey.includes(country)) {
     document.getElementById(country).classList.remove('selected');
@@ -50,7 +50,7 @@ let popCountry = () => {
 }
 
 // Helper to remove specific countries from journey
-let remCountry = (elt, i) => {
+const remCountry = (elt, i) => {
   let country = elt.textContent;
   journey[i] = null;
   if (!journey.includes(country)) {
@@ -62,7 +62,7 @@ let remCountry = (elt, i) => {
 }
 
 // Loads country + flag data from our JSON file
-let loadData = (cb) => {
+const loadData = (cb) => {
   fetch('/static/countries.json')
     .then((res) => {
       return res.json();
@@ -73,7 +73,7 @@ let loadData = (cb) => {
 }
 
 // Binds mouse and touch events to country regions. Passes flag data through for the country list.
-let addCountryEvents = (country, tag, flag) => {
+const addCountryEvents = (country, tag, flag) => {
   // === Desktop/debug events ===
   // 'click' <=> double tap
   country.addEventListener('click', (e) => {
@@ -118,7 +118,7 @@ let addCountryEvents = (country, tag, flag) => {
 }
 
 // Helper to convert from (longitude, latitude) to SVG (x,y) coordinates
-let earthToSvg = (_lon, _lat) => {
+const earthToSvg = (_lon, _lat) => {
   console.log(typeof _lon, typeof _lat);
   let lon = parseFloat(_lon);
   let lat = parseFloat(_lat);
@@ -136,7 +136,7 @@ let earthToSvg = (_lon, _lat) => {
   };
 }
 
-let tagCountries = (data) => {
+const tagCountries = (data) => {
   // Get all our country shapes
   let countries = document.getElementsByTagName('path');
 
@@ -192,6 +192,32 @@ let tagCountries = (data) => {
     // Bind events to the country shape
     addCountryEvents(country, tag, flag);
   }
+}
+
+// POSTs the journey data to the server to be recorded and displayed
+const postJourney = () => {
+  // Remove leftover null elements from our journey
+  let cleanJourney = journey.filter((entry) => {
+    return entry !== null;
+  });
+  // POST data to the server
+  let data = JSON.stringify(cleanJourney);
+  fetch('/api/submit', {
+    body: data,
+    headers: {
+      'content-type': 'application/json'
+    },
+    method: 'POST'
+  }).then((res) => {
+    // Make sure our submission made it through
+    if (res.ok) {
+      // Clear our journey once we are done
+      while (journey.length > 0) {
+        // We use popCountry to ensure the list and map get cleared as well
+        popCountry();
+      }
+    }
+  })
 }
 
 document.addEventListener('DOMContentLoaded', () => {
