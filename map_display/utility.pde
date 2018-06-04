@@ -52,6 +52,9 @@ void requestSync() {
       countries.get(n).tallyCount();
     }
   }
+
+  // Add any additional entries to our journey state list
+  journeyIndices.resize(journeys.size());
 }
 
 // Requests new journey data from the server
@@ -100,6 +103,22 @@ PVector countryCoord(JSONArray journey, int index) {
   return point;
 }
 
+// Ticks the travel indices forward
+void animationTick() {
+  if (millis() - animationLastTick >= animationPathTime) {
+    animationLastTick += animationPathTime;
+    
+    // Make sure we don't tick the fist entry on empty data
+    if (journeys == null || journeys.getJSONArray(0).size() == 0) {
+      return;
+    }
+    
+    for (int i = 0; i < journeyIndices.size(); ++i) {
+      journeyIndices.increment(i);
+    }
+  }
+}
+
 // Function to animate moving planes/points/things across the paths
 void animateJourneys() {
   // Make sure we have retrieved journey dtaa already!
@@ -112,10 +131,24 @@ void animateJourneys() {
 
   // Iterate over our data
   for (int i = 0; i < journeys.size(); ++i) {
+    float localT = t;
     // Let's look at our journey
     JSONArray journey = journeys.getJSONArray(i);
+    // Empty journey means no data, let's get out!
+    if (journey.size() == 0) {
+      return;
+    }
     // What's our current travel? N countries mean N - 1 travels
-    int travelIndex = animationIndex % (journey.size() - 1);
+    int travelIndex = journeyIndices.get(i);
+    if (animationLoop) {
+      travelIndex %= (journey.size() - 1);
+    }
+
+    // Override and draw full path if not looping and we are done
+    if (!animationLoop && journeyIndices.get(i) + 2 > journey.size()) {
+      localT = 1;
+      travelIndex = journey.size() - 2;
+    } 
 
     // Now, let's look at every point we've travelled through so far
     for (int j = 0; j < travelIndex; ++j) {
@@ -129,12 +162,17 @@ void animateJourneys() {
     }
 
     // Where are we at right now? Draw the travel there...
-    PVector currentPos = animateTravel(journey, travelIndex, t);
+    PVector currentPos = animateTravel(journey, travelIndex, localT);
     // And finally add a marker!
     if (animationShowMarker) {    
       noStroke();
       fill(pathR, pathG, pathB);
       ellipse(currentPos.x, currentPos.y, 5, 5);
+    }
+
+    // If we are looping, set our journey index to the temporary value (so that the modulo loops it)
+    if (animationLoop) {
+      journeyIndices.set(i, travelIndex);
     }
   }
 }

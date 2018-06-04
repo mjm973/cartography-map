@@ -45,6 +45,7 @@ Here are some global parameters:
 | `fromWhite`            | `boolean` | If `true`, min color defaults to white                                   |
 | `anipationPathMode` | `AnimationPathMode` | Defines path drawing method. Can be `LINE` or `ARC` |
 | `animationPathTime`    | `int`     | Time (in milliseconds) it takes to trace a bath between two countries    |
+| `animationLoop` | `boolean` | Whether to loop the travel animations or not |
 | `animationShowMarker` | `boolean` | Whether to show a marker at the current point of travel |
 | `animationFadeBorders` | `float` | Fades from no borders (0) to solid borders (1). Exposed for manual override. |
 | `animationFadeStep` | `float` | Defines the speed of the border fade, per frame |

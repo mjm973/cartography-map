@@ -3,10 +3,10 @@ import http.requests.*;
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
 JSONArray journeys; // Our data!
+IntList journeyIndices; // To keep track where we are in each journey
 
 float scaleFactor; // Caching the math to rescale our svg
 
-int animationIndex = 0; // Used to keep track of when to animate what
 double animationLastTick = 0; // Used to keep track of the last time the index increased
 
 enum AnimationPathMode {
@@ -36,7 +36,8 @@ boolean fromWhite = false; // Override min color with white?
 
 // = ANIMATION =
 AnimationPathMode animationPathMode = AnimationPathMode.ARC; // How are we drawing paths between nodes?
-int animationPathTime = 1000; // Time it takes to travel between two countries, in ms
+int animationPathTime = 3000; // Time it takes to travel between two countries, in ms
+boolean animationLoop = false; // Do we loop the paths, or stay at the end of the journey?
 boolean animationShowMarker = true; // Show a "vehicle" marker?
 float animationFadeBorders = 0; // To fade from no borders to solid borders
 float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
@@ -65,6 +66,9 @@ void setup() {
   } else {
     scaleFactor = svgAspect;
   }
+  
+  // Create our list with journey states
+  journeyIndices = new IntList();
 
   //println(svgAspect);
 }
@@ -88,10 +92,7 @@ void draw() {
     c.draw();
   }
 
-  if (millis() - animationLastTick >= animationPathTime) {
-    animationLastTick += animationPathTime;
-    ++animationIndex;
-  }
+  animationTick();
 
   if (animationFadeIn) {
     animationFadeBorders += animationFadeStep;
