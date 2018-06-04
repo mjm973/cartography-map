@@ -1,4 +1,7 @@
+import codeanticode.syphon.*;
 import http.requests.*;
+
+//SyphonServer server;
 
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
@@ -45,6 +48,7 @@ boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 
 void setup() {
   size(1200, 600);
+  //fullScreen(P2D);
   map = loadShape("countries_lowres.svg");
 
   // Create our hashmap of countries
@@ -70,6 +74,8 @@ void setup() {
   // Create our list with journey states
   journeyIndices = new IntList();
 
+  // create Syphon server
+  //server = new SyphonServer(this, "Cartography");
   //println(svgAspect);
 }
 
@@ -107,6 +113,8 @@ void draw() {
   if (frameCount % (int)syncTime*frameRate == 0) {
     requestSync();
   }
+  
+  //server.sendScreen();
 }
 
 void mousePressed() {

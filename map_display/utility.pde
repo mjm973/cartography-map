@@ -107,12 +107,12 @@ PVector countryCoord(JSONArray journey, int index) {
 void animationTick() {
   if (millis() - animationLastTick >= animationPathTime) {
     animationLastTick += animationPathTime;
-    
+
     // Make sure we don't tick the fist entry on empty data
     if (journeys == null || journeys.getJSONArray(0).size() == 0) {
       return;
     }
-    
+
     for (int i = 0; i < journeyIndices.size(); ++i) {
       journeyIndices.increment(i);
     }
@@ -193,8 +193,16 @@ void drawTravel(PVector from, PVector to) {
     heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not nromalized
     float angle = atan2(heading.y, heading.x); // atan2 takes y first
     // Draw our arc
+    boolean invertDirection = false;
+    if (angle > HALF_PI || angle < -HALF_PI) {
+      invertDirection = true;
+    }
     float diameter = heading.mag();
-    arc(center.x, center.y, diameter, diameter, PI+angle, TWO_PI+angle);
+    if (invertDirection) {
+      arc(center.x, center.y, diameter, diameter, TWO_PI+angle, PI+angle);
+    } else {
+      arc(center.x, center.y, diameter, diameter, (PI+angle), TWO_PI+angle);
+    }
     break;
   }
 }
@@ -226,17 +234,56 @@ PVector animateTravel(JSONArray journey, int index, float t) {
     center.div(2.0);
     // Find the rotation of our arc
     PVector heading = PVector.sub(to, from);
-    heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not nromalized
+    heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
     float angle = atan2(heading.y, heading.x); // atan2 takes y first
+    boolean invertDirection = false;
+    if (angle > HALF_PI || angle < -HALF_PI) {
+      //angle += PI;
+      invertDirection = true;
+    }
     // Draw our arc
     float diameter = heading.mag();
     float endAngle = map(t, 0, 1, PI+angle, TWO_PI+angle);
-    arc(center.x, center.y, diameter, diameter, PI+angle, endAngle);
+    PVector point;
+    if (invertDirection) {
+      point = arcCC(center.x, center.y, diameter, diameter, endAngle, PI+angle);
+    } else {
+      point = arcCC(center.x, center.y, diameter, diameter, (PI+angle), endAngle);
+    }
     // Calculate our current x,y manually
-    x = center.x + (diameter/2)*cos(endAngle);
-    y = center.y + (diameter/2)*sin(endAngle);
+    x = point.x;
+    y = point.y;
     break;
   }
 
   return new PVector(x, y);
+}
+
+// Because apparently Processing does not support counter-clockwise arc drawing
+PVector arcCC(float x, float y, float w, float h, float start, float end) {
+  beginShape();
+  float radX = w/2;
+  float radY = h/2;
+
+  float nx = 0, ny = 0;
+
+  if (abs(start-end) > TWO_PI) {
+    println("wot");
+    if (start > end) {
+      start -= TWO_PI;
+    } else {
+      end -= TWO_PI;
+    }
+  }
+
+  for (int i = 0; i < 30; ++i) {
+    float angle = start > end ? ( end - start > TWO_PI ? map(i, 0, 29, end, end - start - TWO_PI) : map(i, 0, 29, end, end - start)) : map(i, 0, 29, start, end);
+    nx = x + radX*cos(angle);
+    ny = y + radY*sin(angle);
+    vertex(nx, ny);
+  }
+
+  endShape();
+
+  return new PVector(nx, ny);
 }
