@@ -125,7 +125,7 @@ const earthToSvg = (_lon, _lat) => {
   // console.log(typeof lon, typeof lat);
 
   let tx = (lon + 180) / 360;
-  let ty = 1 - (lat + 90) / 180;
+  let ty = 1 - (lat + 85) / 170; // Latitudes close to 90 are truncated
   // let mapSvg = document.getElementById('map-svg');
   // let w = mapSvg.getAttribute('width');
   // let h = mapSvg.getAttribute('height');

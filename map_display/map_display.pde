@@ -9,9 +9,20 @@ float scaleFactor; // Caching the math to rescale our svg
 int animationIndex = 0; // Used to keep track of when to animate what
 double animationLastTick = 0; // Used to keep track of the last time the index increased
 
+enum AnimationPathMode {
+  LINE, ARC
+}
+
 // === GLOBAL PARAMETERS ===
 
+// = NETWORK =
 float syncTime = 4; // How long between syncs?
+
+// = COLORS =
+// Travel path color?
+int pathR = 187;
+int pathG = 16;
+int pathB = 36;
 // Color at 1 visit?
 int minR = 14;
 int minG = 223;
@@ -22,11 +33,18 @@ int maxG = 94;
 int maxB = 28;
 int maxTally = 10; // How many visits to reach maxColor?
 boolean fromWhite = false; // Override min color with white?
+
+// = ANIMATION =
+AnimationPathMode animationPathMode = AnimationPathMode.ARC; // How are we drawing paths between nodes?
 int animationPathTime = 1000; // Time it takes to travel between two countries, in ms
+boolean animationShowMarker = true; // Show a "vehicle" marker?
+float animationFadeBorders = 0; // To fade from no borders to solid borders
+float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
+boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 
 void setup() {
   size(1200, 600);
-  map = loadShape("countries.svg");
+  map = loadShape("countries_lowres.svg");
 
   // Create our hashmap of countries
   countries = new HashMap<String, Country>();
@@ -38,7 +56,7 @@ void setup() {
     Country c = new Country(country);
     countries.put(c.name, c);
   }
-  
+
   // Mathemagics to properly scale our map to the display size
   float svgAspect = map.width/map.height;
   float scaledFullHeight = svgAspect*height;
@@ -47,6 +65,8 @@ void setup() {
   } else {
     scaleFactor = svgAspect;
   }
+
+  //println(svgAspect);
 }
 
 void draw() {
@@ -58,21 +78,40 @@ void draw() {
 
     // diableStyle allows us to override the SVG's built-in styling
     c.disableStyle();
-    noStroke();
+    if (animationFadeBorders == 0) {
+      noStroke();
+    } else {
+      stroke((1-animationFadeBorders)*255);
+    }
     fill(mapColor(c.count));
-    
+
     c.draw();
   }
-  
+
   if (millis() - animationLastTick >= animationPathTime) {
     animationLastTick += animationPathTime;
     ++animationIndex;
   }
-  
-  animatePoints();
+
+  if (animationFadeIn) {
+    animationFadeBorders += animationFadeStep;
+  } else {
+    animationFadeBorders -= animationFadeStep;
+  }
+  animationFadeBorders = constrain(animationFadeBorders, 0, 1);
+
+  animateJourneys();
 
   // Every now and then, query the server on the journeys submitted
   if (frameCount % (int)syncTime*frameRate == 0) {
     requestSync();
+  }
+}
+
+void mousePressed() {
+  switch (mouseButton) {
+  case RIGHT:
+    animationFadeIn = !animationFadeIn;
+    break;
   }
 }

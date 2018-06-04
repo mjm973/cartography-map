@@ -38,8 +38,14 @@ Here are some global parameters:
 | Name                   | Type      | Use                                                                      |
 |:----------------------:|:---------:|--------------------------------------------------------------------------|
 | `syncTime`             | `float`   | Approximate time in seconds between sync requests to server              |
+| `pathR`, `pathG`, `pathB` | `int` | Define color for travel paths |
 | `maxTally`             | `int`     | Number of visits at which a country will reach its darkest/maximum color |
 | `minR`, `minG`, `minB` | `int`     | Define color for countries with a single visit (lightest/minimum)        |
 | `maxR`, `maxG`, `maxB` | `int`     | Define color for countries with `>maxTally` visits (darkest/maximum)     |
 | `fromWhite`            | `boolean` | If `true`, min color defaults to white                                   |
+| `anipationPathMode` | `AnimationPathMode` | Defines path drawing method. Can be `LINE` or `ARC` |
 | `animationPathTime`    | `int`     | Time (in milliseconds) it takes to trace a bath between two countries    |
+| `animationShowMarker` | `boolean` | Whether to show a marker at the current point of travel |
+| `animationFadeBorders` | `float` | Fades from no borders (0) to solid borders (1). Exposed for manual override. |
+| `animationFadeStep` | `float` | Defines the speed of the border fade, per frame |
+| `animationFadeIn` | `boolean` | `true` to fade borders in; `false` to fade them out |
