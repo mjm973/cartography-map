@@ -179,25 +179,27 @@ void animateJourneys() {
 
 // Draws completed travels
 void drawTravel(PVector from, PVector to) {
+  PVector center, heading;
+  float angle, diameter, startAngle, endAngle;
   switch (animationPathMode) {
   case LINE:
     line(from.x*map.width, from.y*map.height, to.x*map.width, to.y*map.height);
     break;
   case ARC:
     // Find the center of our arc and convert to drawing coordinates
-    PVector center = PVector.add(from, to);
+     center = PVector.add(from, to);
     center = new PVector(center.x*map.width, center.y*map.height);
     center.div(2.0);
     // Find the rotation of our arc
-    PVector heading = PVector.sub(to, from);
+     heading = PVector.sub(to, from);
     heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
     // Find rotation from horizontal
-    float angle = atan2(heading.y, heading.x); // atan2 takes y first
+     angle = atan2(heading.y, heading.x); // atan2 takes y first
 
     // Draw our arc
-    float diameter = heading.mag();
+     diameter = heading.mag();
     // Show time: find the start and end angles
-    float startAngle, endAngle; // = angle;
+     startAngle, endAngle; // = angle;
     if (from.x < to.x) {
       // Simple case: clockwise travel
       startAngle = angle - PI;
@@ -213,6 +215,38 @@ void drawTravel(PVector from, PVector to) {
     }
 
     arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
+    break;
+    case SHALLOW_ARC:
+        // Find the center of our arc and convert to drawing coordinates
+    center = PVector.add(from, to);
+    center = new PVector(center.x*map.width, center.y*map.height);
+    center.div(2.0);
+    // Find the rotation of our arc
+    heading = PVector.sub(to, from);
+    heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
+    // Find rotation from horizontal
+    angle = atan2(heading.y, heading.x); // atan2 takes y first
+
+    // Draw our arc
+    diameter = heading.mag();
+    // Show time: find the start and end angles
+    if (from.x < to.x) {
+      // Simple case: clockwise travel
+      startAngle = angle - PI;
+      endAngle = map(t, 0, 1, startAngle, angle);
+    } else {
+      // Awful case: counterclockwise travel
+      if (from.y < to.y) {
+        startAngle = angle - PI;
+      } else {
+        startAngle = angle + PI;
+      }
+      endAngle = map(t, 0, 1, startAngle, startAngle - PI);
+    }
+
+    arcShallow(center, diameter, startAngle, endAngle, angle, animationRadiusFactor, 1);
+
+    break;
     break;
   }
 }
