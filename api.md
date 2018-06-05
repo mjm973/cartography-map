@@ -20,20 +20,20 @@ The server handles requests from the audience clients, and keeps track of the jo
 
 Currently, the server supports the following routes:
 
-| Route           | Method | Use                                                                    |
-|:---------------:|:------:|------------------------------------------------------------------------|
-| `'/'`           |`GET`   | Serves the client-side map for audience users                          |
-| `'/api/submit'` |`POST`  | Receives journey data sent by users in JSON format                     |
-| `'/api/sync'`   |`GET`   | Used by the Display App to retrieve the full journey data              |
-| `'/api/update'` |`POST`  | Used by the Display App to retrieve only new journey data              |
-| `'/api/clear'`  |`GET`   | Allows clearing the `journeys` array if needed, and redirects to `'/'` |
-| `'/*'`          |`GET`   | Catch-all, redirects any other request to `'/'`                        |
+| Route           | Method | Use                                                                     |
+|:---------------:|:------:|-------------------------------------------------------------------------|
+| `'/'`           |`GET`   | Serves the client-side map for audience users                           |
+| `'/api/submit'` |`POST`  | Receives journey data sent by users in JSON format                      |
+| `'/api/sync'`   |`GET`   | Used by the Display App to retrieve the full journey data               |
+| `'/api/update'` |`POST`  | Used by the Display App to retrieve only new journey data (in progress) |
+| `'/api/clear'`  |`GET`   | Allows clearing the `journeys` array if needed, and redirects to `'/'`  |
+| `'/*'`          |`GET`   | Catch-all, redirects any other request to `'/'`                         |
 
 ### Display Application
 
 The display application runs as a Processing sketch. It uses the HTTP Requests for Processing library to interface with the server and fetch the journey data. The app loads the same SVG file used in the client web app into a `PShape` object and splits it for further manipulation.
 
-Here are some global parameters:
+Here are the global parameters:
 
 | Name                      | Type                | Use                                                                          |
 |:-------------------------:|:-------------------:|------------------------------------------------------------------------------|
@@ -43,10 +43,13 @@ Here are some global parameters:
 | `minR`, `minG`, `minB`    | `int`               | Define color for countries with a single visit (lightest/minimum)            |
 | `maxR`, `maxG`, `maxB`    | `int`               | Define color for countries with `>maxTally` visits (darkest/maximum)         |
 | `fromWhite`               | `boolean`           | If `true`, min color defaults to white                                       |
-| `anipationPathMode`       | `AnimationPathMode` | Defines path drawing method. Can be `LINE` or `ARC`                          |
+| `scaleY`                  | `float`             | Scales the map vertically                                                    |
+| `anipationPathMode`       | `AnimationPathMode` | Defines path drawing method. Can be `LINE`, `ARC` or `SHALLOW_ARC`           |
 | `animationPathTime`       | `int`               | Time (in milliseconds) it takes to trace a bath between two countries        |
 | `animationLoop`           | `boolean`           | Whether to loop the travel animations or not                                 |
 | `animationShowMarker`     | `boolean`           | Whether to show a marker at the current point of travel                      |
 | `animationFadeBorders`    | `float`             | Fades from no borders (0) to solid borders (1). Exposed for manual override. |
 | `animationFadeStep`       | `float`             | Defines the speed of the border fade, per frame                              |
 | `animationFadeIn`         | `boolean`           | `true` to fade borders in; `false` to fade them out                          |
+| `animationRadiusFactor`   | `float`             | Determines shallowness of `SHALLOW_ARC`. Minimum is 1 (semicircle)           |
+| `animationGradualColor`   | `boolean`           | Do we color countries as we visit them (in "real-time")?                     |

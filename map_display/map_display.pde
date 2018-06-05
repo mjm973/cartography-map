@@ -39,7 +39,7 @@ boolean fromWhite = false; // Override min color with white?
 float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
 
 // = ANIMATION =
-AnimationPathMode animationPathMode = AnimationPathMode.LINE; // How are we drawing paths between nodes?
+AnimationPathMode animationPathMode = AnimationPathMode.SHALLOW_ARC; // How are we drawing paths between nodes?
 int animationPathTime = 3000; // Time it takes to travel between two countries, in ms
 boolean animationLoop = false; // Do we loop the paths, or stay at the end of the journey?
 boolean animationShowMarker = true; // Show a "vehicle" marker?
@@ -47,6 +47,7 @@ float animationFadeBorders = 0; // To fade from no borders to solid borders
 float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
+boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
 
 void setup() {
   size(1200, 600, P2D);
@@ -126,6 +127,15 @@ void draw() {
 void mousePressed() {
   switch (mouseButton) {
   case RIGHT:
+    animationFadeIn = !animationFadeIn;
+    break;
+  }
+}
+
+void keyPressed() {
+  switch (key) {
+  case 'q':
+  case 'Q':
     animationFadeIn = !animationFadeIn;
     break;
   }

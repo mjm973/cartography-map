@@ -29,6 +29,14 @@ color mapColor(int count) {
     );
 }
 
+// Colors in country number n in a given journey
+void tallyTravel(JSONArray journey, int n) {
+  if (n < journey.size()) {
+    String country = journey.getJSONObject(n).getString("name");
+    countries.get(country).tallyCount();
+  }
+}
+
 // Requests full journey data from the server
 void requestSync() {
   GetRequest req = new GetRequest("http://localhost:4242/api/sync");
@@ -38,18 +46,27 @@ void requestSync() {
   // We should get JSON data, so we parse it
   journeys = parseJSONArray(req.getContent());
 
-  // We clear our map before tallying again
-  clearHeatmap();
-  // Iterate over the journeys submitted...
-  for (int i = 0; i < journeys.size(); ++i) {
-    JSONArray journey = journeys.getJSONArray(i);
-    // ...and then over the countries visited...
-    for (int j = 0; j < journey.size(); ++j) {
-      JSONObject country = journey.getJSONObject(j);
+  if (!animationGradualColor) {
+    // We clear our map before tallying again, if doing instant fill-in
+    clearHeatmap();
 
-      // ...and tally based on country name!
-      String n = country.getString("name", "");
-      countries.get(n).tallyCount();
+    // Iterate over the journeys submitted...
+    for (int i = 0; i < journeys.size(); ++i) {
+      JSONArray journey = journeys.getJSONArray(i);
+      // ...and then over the countries visited...
+      for (int j = 0; j < journey.size(); ++j) {
+        JSONObject country = journey.getJSONObject(j);
+
+        // ...and tally based on country name!
+        String n = country.getString("name", "");
+        countries.get(n).tallyCount();
+      }
+    }
+  } else {
+    // We fill in only new, initial countries if doing gradual fill-in
+    for (int i = journeyIndices.size(); i < journeys.size(); ++i) {
+      JSONArray journey = journeys.getJSONArray(i);
+      tallyTravel(journey, 0);
     }
   }
 
@@ -115,6 +132,11 @@ void animationTick() {
 
     for (int i = 0; i < journeyIndices.size(); ++i) {
       journeyIndices.increment(i);
+      if (animationGradualColor) {
+        int index = journeyIndices.get(i);
+        JSONArray journey = journeys.getJSONArray(i);
+        tallyTravel(journey, index);
+      }
     }
   }
 }
@@ -187,17 +209,17 @@ void drawTravel(PVector from, PVector to) {
     break;
   case ARC:
     // Find the center of our arc and convert to drawing coordinates
-     center = PVector.add(from, to);
+    center = PVector.add(from, to);
     center = new PVector(center.x*map.width, center.y*map.height);
     center.div(2.0);
     // Find the rotation of our arc
-     heading = PVector.sub(to, from);
+    heading = PVector.sub(to, from);
     heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
     // Find rotation from horizontal
-     angle = atan2(heading.y, heading.x); // atan2 takes y first
+    angle = atan2(heading.y, heading.x); // atan2 takes y first
 
     // Draw our arc
-     diameter = heading.mag();
+    diameter = heading.mag();
     // Show time: find the start and end angles
     if (from.x < to.x) {
       // Simple case: clockwise travel
@@ -215,8 +237,8 @@ void drawTravel(PVector from, PVector to) {
 
     arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
     break;
-    case SHALLOW_ARC:
-        // Find the center of our arc and convert to drawing coordinates
+  case SHALLOW_ARC:
+    // Find the center of our arc and convert to drawing coordinates
     center = PVector.add(from, to);
     center = new PVector(center.x*map.width, center.y*map.height);
     center.div(2.0);
@@ -246,7 +268,6 @@ void drawTravel(PVector from, PVector to) {
     arcShallow(center, diameter, startAngle, endAngle, angle, animationRadiusFactor, 1);
 
     break;
-    
   }
 }
 

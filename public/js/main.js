@@ -208,6 +208,10 @@ const postJourney = () => {
       lat: coord.y
     }
   });
+  // Abort if data is empty!
+  if (cleanJourney.length === 0) {
+    return;
+  }
   // POST data to the server
   let data = JSON.stringify(cleanJourney);
   fetch('/api/submit', {
