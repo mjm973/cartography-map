@@ -229,6 +229,9 @@ PVector animateTravel(JSONArray journey, int index, float t) {
   noFill();
   stroke(pathR, pathG, pathB);
 
+  PVector center, heading, point;
+  float angle, diameter, startAngle, endAngle;
+
   switch (animationPathMode) {
   case LINE:
     // So where are we now?
@@ -239,19 +242,18 @@ PVector animateTravel(JSONArray journey, int index, float t) {
     break;
   case ARC:
     // Find the center of our arc and convert to drawing coordinates
-    PVector center = PVector.add(from, to);
+    center = PVector.add(from, to);
     center = new PVector(center.x*map.width, center.y*map.height);
     center.div(2.0);
     // Find the rotation of our arc
-    PVector heading = PVector.sub(to, from);
+    heading = PVector.sub(to, from);
     heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
     // Find rotation from horizontal
-    float angle = atan2(heading.y, heading.x); // atan2 takes y first
+    angle = atan2(heading.y, heading.x); // atan2 takes y first
 
     // Draw our arc
-    float diameter = heading.mag();
+    diameter = heading.mag();
     // Show time: find the start and end angles
-    float startAngle, endAngle; // = angle;
     if (from.x < to.x) {
       // Simple case: clockwise travel
       startAngle = angle - PI;
@@ -266,7 +268,39 @@ PVector animateTravel(JSONArray journey, int index, float t) {
       endAngle = map(t, 0, 1, startAngle, startAngle - PI);
     }
 
-    PVector point = arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
+    point = arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
+    x = point.x;
+    y = point.y;
+    break;
+  case SHALLOW_ARC:
+    // Find the center of our arc and convert to drawing coordinates
+    center = PVector.add(from, to);
+    center = new PVector(center.x*map.width, center.y*map.height);
+    center.div(2.0);
+    // Find the rotation of our arc
+    heading = PVector.sub(to, from);
+    heading = new PVector(heading.x*map.width, heading.y*map.height); // We need real coordinates, not normalized
+    // Find rotation from horizontal
+    angle = atan2(heading.y, heading.x); // atan2 takes y first
+
+    // Draw our arc
+    diameter = heading.mag();
+    // Show time: find the start and end angles
+    if (from.x < to.x) {
+      // Simple case: clockwise travel
+      startAngle = angle - PI;
+      endAngle = map(t, 0, 1, startAngle, angle);
+    } else {
+      // Awful case: counterclockwise travel
+      if (from.y < to.y) {
+        startAngle = angle - PI;
+      } else {
+        startAngle = angle + PI;
+      }
+      endAngle = map(t, 0, 1, startAngle, startAngle - PI);
+    }
+
+    point = arcShallow(center, diameter, startAngle, endAngle, angle, animationRadiusFactor, t);
     x = point.x;
     y = point.y;
     break;
@@ -283,8 +317,6 @@ PVector arcCC(float x, float y, float w, float h, float start, float end) {
 
   float nx = 0, ny = 0;
 
-  println(start, end);
-
   for (int i = 0; i < 30; ++i) {
     float angle =  map(i, 0, 29, start, end);
     nx = x + radX*cos(angle);
@@ -295,4 +327,31 @@ PVector arcCC(float x, float y, float w, float h, float start, float end) {
   endShape();
 
   return new PVector(nx, ny);
+}
+
+// You want shallow arcs? You get shallow arcs! YEAH, MATHZ!
+PVector arcShallow(PVector mid, float d, float start, float end, float rot, float factor, float t) {
+  float rad = d/2;
+  float dist = sqrt(rad*rad*(factor*factor - 1));
+  PVector offset = new PVector(-sin(rot), cos(rot)).mult(-dist);
+  float arc = 2*asin(1/factor);
+
+  float nStart, nEnd;
+
+  // Clockwise
+  if (start < end) {
+    offset.mult(-1); // Ensure big circle arcs in the right direction
+    nEnd = rot + 0.5*(arc-PI);
+    nStart = nEnd - arc;
+  } 
+  // Counterclockwise
+  else {
+    nStart = rot + 0.5*(arc+PI);
+    nEnd = nStart - arc;
+  }
+
+  PVector center = PVector.add(mid, offset);
+  float arcTo = map(t, 0, 1, nStart, nEnd);
+
+  return arcCC(center.x, center.y, d*factor, d*factor, nStart, arcTo);
 }

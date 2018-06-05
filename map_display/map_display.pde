@@ -13,7 +13,7 @@ float scaleFactor; // Caching the math to rescale our svg
 double animationLastTick = 0; // Used to keep track of the last time the index increased
 
 enum AnimationPathMode {
-  LINE, ARC
+  LINE, ARC, SHALLOW_ARC
 }
 
 // === GLOBAL PARAMETERS ===
@@ -38,13 +38,14 @@ int maxTally = 10; // How many visits to reach maxColor?
 boolean fromWhite = false; // Override min color with white?
 
 // = ANIMATION =
-AnimationPathMode animationPathMode = AnimationPathMode.ARC; // How are we drawing paths between nodes?
+AnimationPathMode animationPathMode = AnimationPathMode.SHALLOW_ARC; // How are we drawing paths between nodes?
 int animationPathTime = 3000; // Time it takes to travel between two countries, in ms
 boolean animationLoop = false; // Do we loop the paths, or stay at the end of the journey?
 boolean animationShowMarker = true; // Show a "vehicle" marker?
 float animationFadeBorders = 0; // To fade from no borders to solid borders
 float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
+float animationRadiusFactor = 1.5;
 
 void setup() {
   size(1200, 600);
