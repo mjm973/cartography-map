@@ -235,7 +235,7 @@ void drawTravel(PVector from, PVector to) {
       endAngle = startAngle - PI;
     }
 
-    arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
+    arcCC(center, diameter, startAngle, endAngle);
     break;
   case SHALLOW_ARC:
     // Find the center of our arc and convert to drawing coordinates
@@ -322,7 +322,7 @@ PVector animateTravel(JSONArray journey, int index, float t) {
       endAngle = map(t, 0, 1, startAngle, startAngle - PI);
     }
 
-    point = arcCC(center.x, center.y, diameter, diameter, startAngle, endAngle);
+    point = arcCC(center, diameter, startAngle, endAngle);
     x = point.x;
     y = point.y;
     break;
@@ -383,6 +383,25 @@ PVector arcCC(float x, float y, float w, float h, float start, float end) {
   return new PVector(nx, ny);
 }
 
+// Refactored overload because PRETTY
+PVector arcCC(PVector center, float d, float start, float end) {
+  beginShape();
+  float rad = d/2;
+
+  float nx = 0, ny = 0;
+
+  for (int i = 0; i < 30; ++i) {
+    float angle =  map(i, 0, 29, start, end);
+    nx = center.x + rad*cos(angle);
+    ny = center.y + rad*sin(angle);
+    vertex(nx, ny);
+  }
+
+  endShape();
+
+  return new PVector(nx, ny);
+}
+
 // You want shallow arcs? You get shallow arcs! YEAH, MATHZ!
 PVector arcShallow(PVector mid, float d, float start, float end, float rot, float factor, float t) {
   float rad = d/2;
@@ -407,5 +426,5 @@ PVector arcShallow(PVector mid, float d, float start, float end, float rot, floa
   PVector center = PVector.add(mid, offset);
   float arcTo = map(t, 0, 1, nStart, nEnd);
 
-  return arcCC(center.x, center.y, d*factor, d*factor, nStart, arcTo);
+  return arcCC(center, d*factor, nStart, arcTo);
 }
