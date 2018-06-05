@@ -21,7 +21,7 @@ enum AnimationPathMode {
 // = NETWORK =
 float syncTime = 4; // How long between syncs?
 
-// = COLORS =
+// = MAP =
 // Travel path color?
 int pathR = 187;
 int pathG = 16;
@@ -36,19 +36,20 @@ int maxG = 94;
 int maxB = 28;
 int maxTally = 10; // How many visits to reach maxColor?
 boolean fromWhite = false; // Override min color with white?
+float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
 
 // = ANIMATION =
-AnimationPathMode animationPathMode = AnimationPathMode.SHALLOW_ARC; // How are we drawing paths between nodes?
+AnimationPathMode animationPathMode = AnimationPathMode.LINE; // How are we drawing paths between nodes?
 int animationPathTime = 3000; // Time it takes to travel between two countries, in ms
 boolean animationLoop = false; // Do we loop the paths, or stay at the end of the journey?
 boolean animationShowMarker = true; // Show a "vehicle" marker?
 float animationFadeBorders = 0; // To fade from no borders to solid borders
 float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
-float animationRadiusFactor = 1.5;
+float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 
 void setup() {
-  size(1200, 600);
+  size(1200, 600, P2D);
   //fullScreen(P2D);
   map = loadShape("countries_lowres.svg");
 
@@ -71,7 +72,7 @@ void setup() {
   } else {
     scaleFactor = svgAspect;
   }
-  
+
   // Create our list with journey states
   journeyIndices = new IntList();
 
@@ -82,18 +83,22 @@ void setup() {
 
 void draw() {
   background(255);
+  translate(0, 0.5*(height-map.height*scaleFactor));
   scale(scaleFactor);
+  scale(1, scaleY);
+
+  if (animationFadeBorders == 0) {
+    noStroke();
+  } else {
+    stroke((1-animationFadeBorders)*255);
+  }
   // Iterate and draw each country separately
   for (String k : countries.keySet()) {
     Country c = countries.get(k);
 
     // diableStyle allows us to override the SVG's built-in styling
     c.disableStyle();
-    if (animationFadeBorders == 0) {
-      noStroke();
-    } else {
-      stroke((1-animationFadeBorders)*255);
-    }
+
     fill(mapColor(c.count));
 
     c.draw();
@@ -114,7 +119,7 @@ void draw() {
   if (frameCount % (int)syncTime*frameRate == 0) {
     requestSync();
   }
-  
+
   //server.sendScreen();
 }
 

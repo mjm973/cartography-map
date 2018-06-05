@@ -199,7 +199,6 @@ void drawTravel(PVector from, PVector to) {
     // Draw our arc
      diameter = heading.mag();
     // Show time: find the start and end angles
-     startAngle, endAngle; // = angle;
     if (from.x < to.x) {
       // Simple case: clockwise travel
       startAngle = angle - PI;
@@ -233,7 +232,7 @@ void drawTravel(PVector from, PVector to) {
     if (from.x < to.x) {
       // Simple case: clockwise travel
       startAngle = angle - PI;
-      endAngle = map(t, 0, 1, startAngle, angle);
+      endAngle = map(1, 0, 1, startAngle, angle);
     } else {
       // Awful case: counterclockwise travel
       if (from.y < to.y) {
@@ -241,13 +240,13 @@ void drawTravel(PVector from, PVector to) {
       } else {
         startAngle = angle + PI;
       }
-      endAngle = map(t, 0, 1, startAngle, startAngle - PI);
+      endAngle = map(1, 0, 1, startAngle, startAngle - PI);
     }
 
     arcShallow(center, diameter, startAngle, endAngle, angle, animationRadiusFactor, 1);
 
     break;
-    break;
+    
   }
 }
 
