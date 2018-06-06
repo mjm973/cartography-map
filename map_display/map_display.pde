@@ -35,7 +35,15 @@ int maxR = 6;
 int maxG = 94;
 int maxB = 28;
 int maxTally = 10; // How many visits to reach maxColor?
-boolean fromWhite = false; // Override min color with white?
+// Background color?
+int bgR = 255;
+int bgG = 255;
+int bgB = 255;
+// Stroke color?
+int stR = 0;
+int stG = 0;
+int stB = 0;
+boolean fromBg = false; // Override min color with background color??
 float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
 
 // = ANIMATION =
@@ -44,7 +52,7 @@ int animationPathTime = 3000; // Time it takes to travel between two countries, 
 boolean animationLoop = false; // Do we loop the paths, or stay at the end of the journey?
 boolean animationShowMarker = true; // Show a "vehicle" marker?
 float animationFadeBorders = 0; // To fade from no borders to solid borders
-float animationFadeStep = 0.001; // How fast to fade from no borders to full borders
+float animationFadeStep = 0.01; // How fast to fade from no borders to full borders
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
@@ -79,20 +87,18 @@ void setup() {
 
   // create Syphon server
   //server = new SyphonServer(this, "Cartography");
-  //println(svgAspect);
 }
 
 void draw() {
-  background(255);
+  background(bgR, bgG, bgB);
   translate(0, 0.5*(height-map.height*scaleFactor));
   scale(scaleFactor);
   scale(1, scaleY);
 
-  if (animationFadeBorders == 0) {
-    noStroke();
-  } else {
-    stroke((1-animationFadeBorders)*255);
-  }
+  stroke(map(animationFadeBorders, 0, 1, bgR, stR), 
+    map(animationFadeBorders, 0, 1, bgG, stG), 
+    map(animationFadeBorders, 0, 1, bgB, stB));
+
   // Iterate and draw each country separately
   for (String k : countries.keySet()) {
     Country c = countries.get(k);
@@ -105,15 +111,13 @@ void draw() {
     c.draw();
   }
 
+  // Tick our travels forward
   animationTick();
 
-  if (animationFadeIn) {
-    animationFadeBorders += animationFadeStep;
-  } else {
-    animationFadeBorders -= animationFadeStep;
-  }
-  animationFadeBorders = constrain(animationFadeBorders, 0, 1);
+  // Fade borders in/out
+  fadeBorders();
 
+  // Animation weeeeeee!
   animateJourneys();
 
   // Every now and then, query the server on the journeys submitted
@@ -121,7 +125,10 @@ void draw() {
     requestSync();
   }
 
+  // Send image data through Syphon!
   //server.sendScreen();
+
+  //println(frameCount);
 }
 
 void mousePressed() {
