@@ -14,15 +14,17 @@ const addCountry = (c, flag) => {
     let countryList = document.getElementById('country-list');
     // Create new item
     let item = document.createElement('li');
+    let cont = document.createElement('div');
+    item.appendChild(cont);
     let t = document.createTextNode(c.id);
-    item.appendChild(t);
+    cont.appendChild(t);
 
     // Append flag if there is one
     if (flag) {
       let flagEl = document.createElement('img');
       flagEl.classList.add('flag');
       flagEl.src = `/static/img/flags/${flag}`
-      item.appendChild(flagEl);
+      cont.appendChild(flagEl);
     }
 
     // Give item an index
@@ -232,6 +234,88 @@ const postJourney = () => {
   })
 }
 
+const getPinchScale = (e) => {
+  e.preventDefault();
+  let x1 = e.touches.item(0).screenX;
+  let y1 = e.touches.item(0).screenY;
+  let x2 = e.touches.item(1).screenX;
+  let y2 = e.touches.item(1).screenY;
+  let dx = x2 - x1;
+  let dy = y2 - y1;
+
+  let px1 = touchBuffer[0].screenX;
+  let py1 = touchBuffer[0].screenY;
+  let px2 = touchBuffer[1].screenX;
+  let py2 = touchBuffer[1].screenY;
+  let pdx = px2 -px1;
+  let pdy = py2 - py1;
+
+  let dist = Math.sqrt(dx*dx + dy*dy);
+  let pdist = Math.sqrt(pdx*pdx + pdy*pdy);
+
+  return dist/pdist;
+}
+
+const getSlideDelta = (e) => {
+  // e.preventDefault();
+
+  let x = e.touches.item(0).screenX;
+  let y = e.touches.item(0).screenY;
+  let px = touchBuffer[0].screenX;
+  let py = touchBuffer[0].screenY;
+
+  let dx = x - px;
+  let dy = y - py;
+
+  return {
+    x: dx,
+    y: dy
+  };
+}
+
+let touchBuffer = [];
+let mapScale = 1;
+let scaleBuffer;
+let xPos = 0, yPos = 0;
+let xBuf = 0, yBuf = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
   loadData(tagCountries);
+
+  let map = document.getElementById('map-container')
+  let svg = map.firstChild;
+  map.addEventListener('touchstart', (e) => {
+    touchBuffer = [];
+    for (let i = 0; i < e.touches.length; ++i) {
+      touchBuffer.push(e.touches[i]);
+    }
+  })
+  map.addEventListener('touchend', (e) => {
+    mapScale = scaleBuffer;
+    if (e.touches.length === 0) {
+      xPos = xBuf;
+      yPos = yBuf;
+      touchBuffer = [];
+    }
+  })
+  map.addEventListener('touchmove', (e) => {
+    if (e.touches.length >= 2) {
+      let scale = getPinchScale(e);
+      scaleBuffer = mapScale*scale;
+      scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
+
+    } else {
+      let delta = getSlideDelta(e);
+
+      xBuf = xPos + delta.x;
+      yBuf = yPos + delta.y;
+
+      // xBuf = xBuf > 0 ? 0 : (xBuf < svg.width ? svg.width : xBuf);
+      // yBuf = yBuf < 0 ? 0 : (yBuf > svg.height ? svg.height : yBuf);
+
+      map.style.backgroundColor = delta.x > 0 ? "red" : "blue";
+
+    }
+    map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
+  })
 })

@@ -15,6 +15,11 @@ path.selected {
   fill: blue;
 }
 
+svg {
+  width: 70vw;
+  height: auto;
+}
+
 .flag {
   max-height: 40px;
 }
@@ -84,4 +89,63 @@ div.tag-bg {
 
 .right {
   right: 15px;
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.scroll {
+  overflow: scroll;
+}
+
+#map-container {
+  margin-right: 35vw;
+  flex-shrink: 1;
+}
+
+#list-container {
+  height: 100%;
+  width: 35vw;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 1;
+  background-color: lightgray;
+}
+
+#list-container ol {
+  height: 10%;
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+
+#list-container img {
+  object-fit: scale-down;
+}
+
+#list-container li {
+  height: 30px;
+  padding: 2px 0;
+  /* border-top: 2px solid black; */
+  border-bottom: 2px solid black;
+}
+
+#list-container li>div {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center;
+  align-content: center; */
+}
+
+#list-container .container {
+  height: 25px;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+#list-container button {
+  width: 30%;
+  flex-grow: 1;
 }

@@ -33,6 +33,8 @@ Currently, the server supports the following routes:
 
 The display application runs as a Processing sketch. It uses the HTTP Requests for Processing library to interface with the server and fetch the journey data. The app loads the same SVG file used in the client web app into a `PShape` object and splits it for further manipulation.
 
+- NOTE: There seems to be a bug with Processing's P2D OpenGL rendering engine when drawing the country strokes. As it stands, it will cause the application to take a while to start, but should run smoothly afterwards.
+
 Here are the global parameters:
 
 | Name                      | Type                | Use                                                                          |
@@ -41,8 +43,10 @@ Here are the global parameters:
 | `pathR`, `pathG`, `pathB` | `int`               | Define color for travel paths                                                |
 | `maxTally`                | `int`               | Number of visits at which a country will reach its darkest/maximum color     |
 | `minR`, `minG`, `minB`    | `int`               | Define color for countries with a single visit (lightest/minimum)            |
-| `maxR`, `maxG`, `maxB`    | `int`               | Define color for countries with `>maxTally` visits (darkest/maximum)         |
-| `fromWhite`               | `boolean`           | If `true`, min color defaults to white                                       |
+| `maxR`, `maxG`, `maxB`    | `int`               | Define color for countries with `maxTally` or more visits (darkest/maximum)  |
+| `bgR`, `bgG`, `bgB`       | `int`               | Define background color                                                      |
+| `stR`, `stG`, `stB`       | `int`               | Define country stroke color                                                  |
+| `fromBg`                  | `boolean`           | If `true`, min color defaults to background color                            |
 | `scaleY`                  | `float`             | Scales the map vertically                                                    |
 | `anipationPathMode`       | `AnimationPathMode` | Defines path drawing method. Can be `LINE`, `ARC` or `SHALLOW_ARC`           |
 | `animationPathTime`       | `int`               | Time (in milliseconds) it takes to trace a bath between two countries        |
