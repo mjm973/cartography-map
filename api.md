@@ -64,26 +64,26 @@ Here are the global parameters:
 
 The following global parameters are exposed via OSC:
 
-| Parameter                 | OSC Address               | Expected Types *    |
-|:-------------------------:|:-------------------------:|:-------------------:|
-| `pathR`, `pathG`, `pathB` | `/pathColor`              | `int`, `int`, `int` |
-| `maxTally`                | `/maxTally`               | `int`               |
-| `minR`, `minG`, `minB`    | `/minColor`               | `int`, `int`, `int` |
-| `maxR`, `maxG`, `maxB`    | `/maxColor`               | `int`, `int`, `int` |
-| `bgR`, `bgG`, `bgB`       | `/bgColor`                | `int`, `int`, `int` |
-| `stR`, `stG`, `stB`       | `/strokeColor`            | `int`, `int`, `int` |
-| `fromBg`                  | `/fromBg`                 | `int`               |
-| `animationPathMode`       | `/animation/pathMode`     | `int`               |
-| `animationPathTime`       | `/animation/pathTime`     | `int`               |
-| `animationFadeBorders`    | `/animation/fadeBorders`  | `float`             |
-| `animationFadeStep`       | `/animation/fadeStep`     | `float`             |
-| `animationFadeIn`         | `/animation/fadeIn`       | `int`               |
-| `animationRadiusFactor`   | `/animation/radiusFactor` | `float`             |
-| `animationColorStep`      | `/animation.colorStep`    | `float`             |
-| `debug`                   | `/debug`                  | `int`               |
-| `syncTime`                | `/syncTime`               | `float`             |
-| `scaleY`                  | `/scaleY`                 | `float`             |
-| `yOffset`                 | `/yOffset`                | `float`             |
-| `minLat`, `maxLat`        | `/latRange`               | `float`, `float`    |
+| Parameter                 | OSC Address               | Expected Types *    | Range        |
+|:-------------------------:|:-------------------------:|:-------------------:|--------------|
+| `pathR`, `pathG`, `pathB` | `/pathColor`              | `int`, `int`, `int` | `0..255`     |
+| `maxTally`                | `/maxTally`               | `int`               | `> 0`        |
+| `minR`, `minG`, `minB`    | `/minColor`               | `int`, `int`, `int` | `0..255`     |
+| `maxR`, `maxG`, `maxB`    | `/maxColor`               | `int`, `int`, `int` | `0..255`     |
+| `bgR`, `bgG`, `bgB`       | `/bgColor`                | `int`, `int`, `int` | `0..255`     |
+| `stR`, `stG`, `stB`       | `/strokeColor`            | `int`, `int`, `int` | `0..255`     |
+| `fromBg`                  | `/fromBg`                 | `int`               | `0..1`       |
+| `animationPathMode`       | `/animation/pathMode`     | `int`               | `0..2`       |
+| `animationPathTime`       | `/animation/pathTime`     | `int`               | `> 0`        |
+| `animationFadeBorders`    | `/animation/fadeBorders`  | `float`             | `0..1`       |
+| `animationFadeStep`       | `/animation/fadeStep`     | `float`             | `0..1`       |
+| `animationFadeIn`         | `/animation/fadeIn`       | `int`               | `0..1`       |
+| `animationRadiusFactor`   | `/animation/radiusFactor` | `float`             | `>= 1`       |
+| `animationColorStep`      | `/animation.colorStep`    | `float`             | `0..1`       |
+| `debug`                   | `/debug`                  | `int`               | `0..1`       |
+| `syncTime`                | `/syncTime`               | `float`             | `>= 1`       |
+| `scaleY`                  | `/scaleY`                 | `float`             | `> 0`        |
+| `yOffset`                 | `/yOffset`                | `float`             | `>= 0`       |
+| `minLat`, `maxLat`        | `/latRange`               | `float`, `float`    | `< 0`, `> 0` |
 
 - (*) `boolean` parameters are converted from `int` OSC messages because otherwise the thing breaks.

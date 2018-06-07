@@ -286,6 +286,7 @@ let mapScale = 1;
 let scaleBuffer;
 let xPos = 0, yPos = 0;
 let xBuf = 0, yBuf = 0;
+let w = 0, h = 0;
 
 const resetView = () => {
   mapScale = 1;
@@ -309,7 +310,11 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData(tagCountries);
 
   let map = document.getElementById('map-container')
+
   let svg = map.firstChild;
+  w = map.clientWidth;
+  h = map.clientHeight;
+
   map.addEventListener('touchstart', (e) => {
     touchBuffer = [];
     for (let i = 0; i < e.touches.length; ++i) {
@@ -337,11 +342,23 @@ document.addEventListener('DOMContentLoaded', () => {
       xBuf = xPos + delta.x;
       yBuf = yPos + delta.y;
 
-      // xBuf = xBuf > 0 ? 0 : (xBuf < svg.width ? svg.width : xBuf);
-      // yBuf = yBuf < 0 ? 0 : (yBuf > svg.height ? svg.height : yBuf);
+      // MATH SORCERY I ONLY HALF UNDERSTAND
+      let upperX = w*(scaleBuffer-1)/2;
+      let upperY = h*(scaleBuffer-1)/(2);
+      let lowerY = -upperY;
 
-      // map.style.backgroundColor = delta.x > 0 ? "red" : "blue";
+      if (xBuf < 0) {
+        xBuf = 0;
+      } else if (xBuf > upperX) {
+        xBuf = upperX;
+      }
 
+      // Y is different because map is centered vertically I think?
+      if (yBuf < lowerY) {
+        yBuf = 0 - h*(scaleBuffer-1)/(2);
+      } else if (yBuf > upperY) {
+        yBuf = upperY;
+      }
     }
     map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
   })
