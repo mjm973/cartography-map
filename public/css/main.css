@@ -7,12 +7,17 @@ html, body {
   touch-action: manipulation;
 }
 
+path {
+  stroke: black;
+  fill: gray;
+}
+
 path:hover {
-  fill: red;
+  /* fill: red; */
 }
 
 path.selected {
-  fill: blue;
+  fill: rgb(14, 223, 65);
 }
 
 svg {
@@ -102,6 +107,7 @@ div.tag-bg {
 #map-container {
   margin-right: 35vw;
   flex-shrink: 1;
+  background-color: lightgray;
 }
 
 #list-container {
@@ -111,7 +117,7 @@ div.tag-bg {
   right: 0;
   top: 0;
   z-index: 1;
-  background-color: lightgray;
+  background-color: whitesmoke;
 }
 
 #list-container ol {

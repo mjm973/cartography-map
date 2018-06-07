@@ -11,7 +11,7 @@ void clearHeatmap() {
 // Set fromBg to true to simple interpolate from background to maxColor (maxR, maxG, maxB)
 color mapColor(int count) {
   int clamped = constrain(count, 0, maxTally);
-  
+
   if (!fromBg) {
     if (clamped == 0) {
       return color(bgR, bgG, bgB);
@@ -86,9 +86,21 @@ void requestSync() {
       tallyTravel(journey, 0);
     }
   }
+  
+  //println(journeys.size(), journeyIndices.size());
 
-  // Add any additional entries to our journey state list
-  journeyIndices.resize(journeys.size());
+  // Did we actually get data?
+  if (journeys.size() >= journeyIndices.size() && journeys.getJSONArray(0).size() > 0) {
+    // Add any additional entries to our journey state list
+    journeyIndices.resize(journeys.size());
+  }
+  // Or did the data get reset?
+  else {
+    journeyIndices.clear();
+    journeyIndices.resize(1);
+    
+    clearHeatmap();
+  }
 }
 
 // Requests new journey data from the server
@@ -106,7 +118,7 @@ void requestUpdate(JSONArray json) {
     post.addData("count", String.valueOf(count));
     post.send();
 
-    println(post.getContent());
+    //println(post.getContent());
     // Parse our new data!
     JSONArray data = parseJSONArray(post.getContent());
 
@@ -127,12 +139,27 @@ void requestUpdate(JSONArray json) {
   }
 }
 
+// Maps (lon, lat) coordinate received from server to normalized coordinate
+PVector mapCoordinates(PVector coord) {
+  // Map longitude from -180 .. 180 to 0 .. 1
+  float x = map(coord.x, -180, 180, 0, 1);
+  // Map latitude from maxLat .. minLat to 0 .. 1 (because Y points down in this context)
+  float y = map(coord.y, maxLat, minLat, 0, 1);
+
+  return new PVector(x, y);
+}
+
 // Helper to get coordinate data out of the journey JSON
 PVector countryCoord(JSONArray journey, int index) {
   JSONObject data = journey.getJSONObject(index);
-  PVector point = new PVector(
-    data.getFloat("lon"), 
-    data.getFloat("lat"));
+  try {
+    PVector point = new PVector(
+      data.getFloat("lon"), 
+      data.getFloat("lat"));
 
-  return point;
+    return mapCoordinates(point);
+  } 
+  catch (Exception e) {
+    return new PVector();
+  }
 }

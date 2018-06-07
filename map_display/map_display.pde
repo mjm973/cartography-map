@@ -1,7 +1,12 @@
+import netP5.*;
+import oscP5.*;
+
 import codeanticode.syphon.*;
 import http.requests.*;
 
 //SyphonServer server;
+OscP5 osc;
+NetAddress remote;
 
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
@@ -17,9 +22,6 @@ enum AnimationPathMode {
 }
 
 // === GLOBAL PARAMETERS ===
-
-// = NETWORK =
-float syncTime = 4; // How long between syncs?
 
 // = MAP =
 // Travel path color?
@@ -44,7 +46,6 @@ int stR = 0;
 int stG = 0;
 int stB = 0;
 boolean fromBg = false; // Override min color with background color??
-float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
 
 // = ANIMATION =
 AnimationPathMode animationPathMode = AnimationPathMode.SHALLOW_ARC; // How are we drawing paths between nodes?
@@ -56,6 +57,15 @@ float animationFadeStep = 0.01; // How fast to fade from no borders to full bord
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
+
+// = CALLIBRATION =
+boolean debug = false; // Controls print statements for callibration and debug
+float syncTime = 4; // How long between syncs?
+float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
+float yOffset = 0; // Offset from the top to position map
+// Latitude range for coordnate scaling
+float maxLat = 85;
+float minLat = -85;
 
 void setup() {
   size(1200, 600, P2D);
@@ -87,11 +97,15 @@ void setup() {
 
   // create Syphon server
   //server = new SyphonServer(this, "Cartography");
+
+  // Set up OSC Communication
+  osc = new OscP5(this, 9999);
+  //remote = new NetAddress(
 }
 
 void draw() {
   background(bgR, bgG, bgB);
-  translate(0, 0.5*(height-map.height*scaleFactor));
+  translate(0, yOffset);
   scale(scaleFactor);
   scale(1, scaleY);
 

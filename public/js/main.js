@@ -76,31 +76,34 @@ const loadData = (cb) => {
 
 // Binds mouse and touch events to country regions. Passes flag data through for the country list.
 const addCountryEvents = (country, tag, flag) => {
-  // === Desktop/debug events ===
-  // 'click' <=> double tap
-  country.addEventListener('click', (e) => {
-    console.log(country.id);
-    addCountry(country, flag);
-  });
-  // 'mouseenter' <=> 'touchstart'
-  country.addEventListener('mouseenter', (e) => {
-    tag.style.left = `${e.clientX}px`;
-    tag.style.top = `${e.clientY}px`;
-    tag.classList.remove('hidden');
-  });
-  // 'mouseleave' <=> 'touchend'
-  country.addEventListener('mouseleave', (e) => {
-    tag.classList.add('hidden');
-  });
+  // // === Desktop/debug events ===
+  // // 'click' <=> double tap
+  // country.addEventListener('click', (e) => {
+  //   console.log(country.id);
+  //   addCountry(country, flag);
+  // });
+  // // 'mouseenter' <=> 'touchstart'
+  // country.addEventListener('mouseenter', (e) => {
+  //   tag.style.left = `${e.clientX}px`;
+  //   tag.style.top = `${e.clientY}px`;
+  //   tag.classList.remove('hidden');
+  // });
+  // // 'mouseleave' <=> 'touchend'
+  // country.addEventListener('mouseleave', (e) => {
+  //   tag.classList.add('hidden');
+  // });
 
   // === Mobile/final events ===
   // 'touchstart' handles single touch (show tag) and double tap (select country)
   country.addEventListener('touchstart', (e) => {
+    // If we haven't tapped recently or we are tapping with several fingers, reset the counter
     if (!tap || e.touches.length > 1) {
       tap = setTimeout(() => {
         tap = null;
       }, 300);
-    } else {
+    }
+    // If we do a second tap with a single finger, trigger double tap!
+    else {
       clearTimeout(tap);
       tap = null;
 
@@ -108,10 +111,15 @@ const addCountryEvents = (country, tag, flag) => {
       addCountry(country, flag);
     }
 
-    let touch = e.touches[0];
-    tag.style.left = `${touch.clientX}px`;
-    tag.style.top = `${touch.clientY}px`;
-    tag.classList.remove('hidden');
+    // Show country tag but only if we are single touching
+    if (e.touches.length === 1) {
+      let touch = e.touches[0];
+      tag.style.left = `${touch.clientX}px`;
+      tag.style.top = `${touch.clientY - 75}px`;
+      tag.classList.remove('hidden');
+    } else {
+      tag.classList.add('hidden');
+    }
   });
   // 'touchend' handles the end of a touch (hide tag)
   country.addEventListener('touchend', (e) => {
@@ -189,7 +197,7 @@ const tagCountries = (data) => {
     let txt = document.createTextNode(country.id);
     p.appendChild(txt);
     tag.appendChild(p);
-    document.getElementById('map-container').appendChild(tag);
+    document.body.appendChild(tag);
 
     // Bind events to the country shape
     addCountryEvents(country, tag, flag);
@@ -206,8 +214,8 @@ const postJourney = () => {
     let coord = earthToSvg(country.dataset.lon, country.dataset.lat);
     return {
       name: entry,
-      lon: coord.x,
-      lat: coord.y
+      lon: country.dataset.lon,
+      lat: country.dataset.lat
     }
   });
   // Abort if data is empty!
@@ -279,6 +287,24 @@ let scaleBuffer;
 let xPos = 0, yPos = 0;
 let xBuf = 0, yBuf = 0;
 
+const resetView = () => {
+  mapScale = 1;
+  xPos = 0;
+  yPos = 0;
+
+  let map = document.getElementById('map-container')
+    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+}
+
+const scaleStrokes = (scale) => {
+  let countries = document.getElementsByTagName('path');
+  let countryList = Array.from(countries);
+
+  countryList.forEach((country) => {
+    country.style.strokeWidth = 1/scale;
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadData(tagCountries);
 
@@ -304,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       scaleBuffer = mapScale*scale;
       scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
 
+      scaleStrokes(scaleBuffer);
     } else {
       let delta = getSlideDelta(e);
 
@@ -313,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // xBuf = xBuf > 0 ? 0 : (xBuf < svg.width ? svg.width : xBuf);
       // yBuf = yBuf < 0 ? 0 : (yBuf > svg.height ? svg.height : yBuf);
 
-      map.style.backgroundColor = delta.x > 0 ? "red" : "blue";
+      // map.style.backgroundColor = delta.x > 0 ? "red" : "blue";
 
     }
     map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;

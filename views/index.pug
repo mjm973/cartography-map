@@ -8,13 +8,14 @@ html
   body
     div(class="container")
       div(id="map-container" class="full-h container center scroll")
-        include ../public/svg/countries.svg
+        include ../public/svg/countries_lowres.svg
         
     div(id="list-container" class="full-h container vertical")
       ol(id="country-list")  
       div(class="container")
         button(onclick="popCountry()") Undo
         button(onclick="postJourney()") Submit
+        button(onclick="resetView()") Reset
     //-div(id="data" data-master=master)
         
     //- script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.min.js")
