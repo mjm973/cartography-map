@@ -205,5 +205,15 @@ void oscEvent(OscMessage message) {
       }
     }
     break;
+    // [int] -> animationColorThreshold
+    case "/animation/colorThreshold":
+    if (message.checkTypetag("i")) {
+      animationColorThreshold = message.get(0).intValue();
+
+      if (debug) {
+        println(String.format("animationColorThreshold set to [%d]", animationColorThreshold));
+      }
+    }
+    break;
   }
 }

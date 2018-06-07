@@ -105,7 +105,8 @@ div.tag-bg {
 }
 
 #map-container {
-  margin-right: 35vw;
+  width: 65vw;
+  left: 0;
   flex-shrink: 1;
   background-color: lightgray;
 }

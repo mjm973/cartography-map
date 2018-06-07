@@ -6,6 +6,7 @@ class Country {
   PShape shape;
 
   int count = 0;
+  int realCount = 0;
   float counting = 0;
 
   Country(PShape svg) {
@@ -37,9 +38,14 @@ class Country {
 
   public void resetCount() {
     count = 0;
+    realCount = 0;
+    counting = 0;
   }
 
   public void tallyCount() {
-    ++count;
+    ++realCount;
+    if ((realCount - 1) % animationColorThreshold == 0) {
+      ++count;
+    }
   }
 }

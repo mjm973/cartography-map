@@ -113,6 +113,8 @@ const addCountryEvents = (country, tag, flag) => {
 
     // Show country tag but only if we are single touching
     if (e.touches.length === 1) {
+      e.preventDefault();
+
       let touch = e.touches[0];
       tag.style.left = `${touch.clientX}px`;
       tag.style.top = `${touch.clientY - 75}px`;
@@ -125,6 +127,7 @@ const addCountryEvents = (country, tag, flag) => {
   country.addEventListener('touchend', (e) => {
     tag.classList.add('hidden');
   });
+
 }
 
 // Helper to convert from (longitude, latitude) to normalized SVG (x,y) coordinates
@@ -178,6 +181,13 @@ const tagCountries = (data) => {
   for (let i = 0; i < countries.length; ++i) {
     // Pick a country
     let country = countries[i];
+
+    // Kill Antarctica soz
+    if (country.id === "Antarctica") {
+      let group = country.parentNode;
+      group.removeChild(country);
+      continue;
+    }
 
     // Add coordinate data
     let countryData = matchObj[country.id];
@@ -314,6 +324,12 @@ document.addEventListener('DOMContentLoaded', () => {
   let svg = map.firstChild;
   w = map.clientWidth;
   h = map.clientHeight;
+
+  // Detect oreintation change to keep scroll magic working
+  window.addEventListener('orientationchange', (e) => {
+    w = map.clientWidth;
+    h = map.clientHeight;
+  })
 
   map.addEventListener('touchstart', (e) => {
     touchBuffer = [];

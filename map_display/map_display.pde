@@ -36,7 +36,7 @@ int minB = 65;
 int maxR = 6;
 int maxG = 94;
 int maxB = 28;
-int maxTally = 10; // How many visits to reach maxColor?
+int maxTally = 7; // How many visits to reach maxColor?
 // Background color?
 int bgR = 255;
 int bgG = 255;
@@ -58,12 +58,13 @@ boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
 float animationColorStep = 0.05; // How fast we fade between country colors?
+int animationColorThreshold = 1; // How many visits correspond to a change in color?
 
 // = CALLIBRATION =
 boolean debug = false; // Controls print statements for callibration and debug
 float syncTime = 4; // How long between syncs?
-float scaleY = 1.2; // Stretches the map vertically. 1.2 almost clips Antarctica off completely.
-float yOffset = 0; // Offset from the top to position map
+float scaleY = 1.4125; // Stretches the map vertically. 1.4125 is default
+float yOffset = 64; // Offset from the top to position map. 64 is default (MacBook fullscreen)
 // Latitude range for coordnate scaling
 float maxLat = 85;
 float minLat = -85;

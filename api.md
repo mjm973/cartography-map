@@ -56,6 +56,7 @@ Here are the global parameters:
 | `animationRadiusFactor`   | `float`             | Determines shallowness of `SHALLOW_ARC`. Minimum is 1 (semicircle)           |
 | `animationGradualColor`   | `boolean`           | Do we color countries as we visit them (in "real-time")?                     |
 | `animationColorStep`      | `float`             | Rate at which we fade between country colors                                 |
+| `animationColorThreshold` | `int`               | How many visits correspond to a change in color?                             |
 | `debug`                   | `boolean`           | Enable debug logs for OSC callibration?                                      |
 | `syncTime`                | `float`             | Approximate time in seconds between sync requests to server                  |
 | `scaleY`                  | `float`             | Scales the map vertically                                                    |
@@ -64,26 +65,27 @@ Here are the global parameters:
 
 The following global parameters are exposed via OSC:
 
-| Parameter                 | OSC Address               | Expected Types *    | Range        |
-|:-------------------------:|:-------------------------:|:-------------------:|--------------|
-| `pathR`, `pathG`, `pathB` | `/pathColor`              | `int`, `int`, `int` | `0..255`     |
-| `maxTally`                | `/maxTally`               | `int`               | `> 0`        |
-| `minR`, `minG`, `minB`    | `/minColor`               | `int`, `int`, `int` | `0..255`     |
-| `maxR`, `maxG`, `maxB`    | `/maxColor`               | `int`, `int`, `int` | `0..255`     |
-| `bgR`, `bgG`, `bgB`       | `/bgColor`                | `int`, `int`, `int` | `0..255`     |
-| `stR`, `stG`, `stB`       | `/strokeColor`            | `int`, `int`, `int` | `0..255`     |
-| `fromBg`                  | `/fromBg`                 | `int`               | `0..1`       |
-| `animationPathMode`       | `/animation/pathMode`     | `int`               | `0..2`       |
-| `animationPathTime`       | `/animation/pathTime`     | `int`               | `> 0`        |
-| `animationFadeBorders`    | `/animation/fadeBorders`  | `float`             | `0..1`       |
-| `animationFadeStep`       | `/animation/fadeStep`     | `float`             | `0..1`       |
-| `animationFadeIn`         | `/animation/fadeIn`       | `int`               | `0..1`       |
-| `animationRadiusFactor`   | `/animation/radiusFactor` | `float`             | `>= 1`       |
-| `animationColorStep`      | `/animation.colorStep`    | `float`             | `0..1`       |
-| `debug`                   | `/debug`                  | `int`               | `0..1`       |
-| `syncTime`                | `/syncTime`               | `float`             | `>= 1`       |
-| `scaleY`                  | `/scaleY`                 | `float`             | `> 0`        |
-| `yOffset`                 | `/yOffset`                | `float`             | `>= 0`       |
-| `minLat`, `maxLat`        | `/latRange`               | `float`, `float`    | `< 0`, `> 0` |
+| Parameter                 | OSC Address                 | Expected Types *    | Range        |
+|:-------------------------:|:---------------------------:|:-------------------:|--------------|
+| `pathR`, `pathG`, `pathB` | `/pathColor`                | `int`, `int`, `int` | `0..255`     |
+| `maxTally`                | `/maxTally`                 | `int`               | `> 0`        |
+| `minR`, `minG`, `minB`    | `/minColor`                 | `int`, `int`, `int` | `0..255`     |
+| `maxR`, `maxG`, `maxB`    | `/maxColor`                 | `int`, `int`, `int` | `0..255`     |
+| `bgR`, `bgG`, `bgB`       | `/bgColor`                  | `int`, `int`, `int` | `0..255`     |
+| `stR`, `stG`, `stB`       | `/strokeColor`              | `int`, `int`, `int` | `0..255`     |
+| `fromBg`                  | `/fromBg`                   | `int`               | `0..1`       |
+| `animationPathMode`       | `/animation/pathMode`       | `int`               | `0..2`       |
+| `animationPathTime`       | `/animation/pathTime`       | `int`               | `> 0`        |
+| `animationFadeBorders`    | `/animation/fadeBorders`    | `float`             | `0..1`       |
+| `animationFadeStep`       | `/animation/fadeStep`       | `float`             | `0..1`       |
+| `animationFadeIn`         | `/animation/fadeIn`         | `int`               | `0..1`       |
+| `animationRadiusFactor`   | `/animation/radiusFactor`   | `float`             | `>= 1`       |
+| `animationColorStep`      | `/animation.colorStep`      | `float`             | `0..1`       |
+| `animationColorThreshold` | `/animation/colorThreshold` | `int`               | `>= 1`       |
+| `debug`                   | `/debug`                    | `int`               | `0..1`       |
+| `syncTime`                | `/syncTime`                 | `float`             | `>= 1`       |
+| `scaleY`                  | `/scaleY`                   | `float`             | `> 0`        |
+| `yOffset`                 | `/yOffset`                  | `float`             | `>= 0`       |
+| `minLat`, `maxLat`        | `/latRange`                 | `float`, `float`    | `< 0`, `> 0` |
 
 - (*) `boolean` parameters are converted from `int` OSC messages because otherwise the thing breaks.
