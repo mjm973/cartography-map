@@ -55,6 +55,7 @@ Here are the global parameters:
 | `animationFadeIn`         | `boolean`           | `true` to fade borders in; `false` to fade them out                          |
 | `animationRadiusFactor`   | `float`             | Determines shallowness of `SHALLOW_ARC`. Minimum is 1 (semicircle)           |
 | `animationGradualColor`   | `boolean`           | Do we color countries as we visit them (in "real-time")?                     |
+| `animationColorStep`      | `float`             | Rate at which we fade between country colors                                 |
 | `debug`                   | `boolean`           | Enable debug logs for OSC callibration?                                      |
 | `syncTime`                | `float`             | Approximate time in seconds between sync requests to server                  |
 | `scaleY`                  | `float`             | Scales the map vertically                                                    |
@@ -78,6 +79,7 @@ The following global parameters are exposed via OSC:
 | `animationFadeStep`       | `/animation/fadeStep`     | `float`             |
 | `animationFadeIn`         | `/animation/fadeIn`       | `int`               |
 | `animationRadiusFactor`   | `/animation/radiusFactor` | `float`             |
+| `animationColorStep`      | `/animation.colorStep`    | `float`             |
 | `debug`                   | `/debug`                  | `int`               |
 | `syncTime`                | `/syncTime`               | `float`             |
 | `scaleY`                  | `/scaleY`                 | `float`             |

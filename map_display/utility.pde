@@ -9,17 +9,21 @@ void clearHeatmap() {
 // Utility function to map colors depending on amount of times visited
 // Set fromBg to false to use minColor (minR, minG, minB) as a starting point
 // Set fromBg to true to simple interpolate from background to maxColor (maxR, maxG, maxB)
-color mapColor(int count) {
-  int clamped = constrain(count, 0, maxTally);
+color mapColor(float count) {
+  float clamped = constrain(count, 0, maxTally);
 
   if (!fromBg) {
-    if (clamped == 0) {
-      return color(bgR, bgG, bgB);
+    if (clamped < 1) {
+      return color(
+        map(clamped, 0, 1, bgR, minR), 
+        map(clamped, 0, 1, bgG, minG), 
+        map(clamped, 0, 1, bgB, minB)
+        );
     } else {
       return color(
-        map(clamped, 0, maxTally, minR, maxR), 
-        map(clamped, 0, maxTally, minG, maxG), 
-        map(clamped, 0, maxTally, minB, maxB)
+        map(clamped, 1, maxTally, minR, maxR), 
+        map(clamped, 1, maxTally, minG, maxG), 
+        map(clamped, 1, maxTally, minB, maxB)
         );
     }
   }
@@ -86,7 +90,7 @@ void requestSync() {
       tallyTravel(journey, 0);
     }
   }
-  
+
   //println(journeys.size(), journeyIndices.size());
 
   // Did we actually get data?
@@ -98,7 +102,7 @@ void requestSync() {
   else {
     journeyIndices.clear();
     journeyIndices.resize(1);
-    
+
     clearHeatmap();
   }
 }

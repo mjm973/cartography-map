@@ -188,10 +188,21 @@ void oscEvent(OscMessage message) {
   case "/animation/radiusFactor":
     if (message.checkTypetag("f")) {
       animationRadiusFactor = message.get(0).floatValue();
-    }
 
-    if (debug) {
-      println(String.format("animationRadiusFactor set to [%f]", animationRadiusFactor));
+
+      if (debug) {
+        println(String.format("animationRadiusFactor set to [%f]", animationRadiusFactor));
+      }
+    }
+    break;
+    // [float] -> animationColorStep
+  case "/animation/colorStep": 
+    if (message.checkTypetag("f")) {
+      animationColorStep = message.get(0).floatValue();
+
+      if (debug) {
+        println(String.format("animationColorStep set to [%f]", animationColorStep));
+      }
     }
     break;
   }

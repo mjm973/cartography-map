@@ -6,6 +6,7 @@ class Country {
   PShape shape;
 
   int count = 0;
+  float counting = 0;
 
   Country(PShape svg) {
     shape = svg;
@@ -23,6 +24,7 @@ class Country {
 
   public void draw() {
     shape(shape);
+    counting = constrain(counting + animationColorStep, 0, count);
   }
 
   public void draw(float w, float h) {

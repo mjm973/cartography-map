@@ -57,6 +57,7 @@ float animationFadeStep = 0.01; // How fast to fade from no borders to full bord
 boolean animationFadeIn = false; // Enable to fade in; disable to fade out
 float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
+float animationColorStep = 0.05; // How fast we fade between country colors?
 
 // = CALLIBRATION =
 boolean debug = false; // Controls print statements for callibration and debug
@@ -120,7 +121,7 @@ void draw() {
     // diableStyle allows us to override the SVG's built-in styling
     c.disableStyle();
 
-    fill(mapColor(c.count));
+    fill(mapColor(c.counting));
 
     c.draw();
   }
