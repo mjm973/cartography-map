@@ -39,7 +39,6 @@ Here are the global parameters:
 
 | Name                      | Type                | Use                                                                          |
 |:-------------------------:|:-------------------:|------------------------------------------------------------------------------|
-| `syncTime`                | `float`             | Approximate time in seconds between sync requests to server                  |
 | `pathR`, `pathG`, `pathB` | `int`               | Define color for travel paths                                                |
 | `maxTally`                | `int`               | Number of visits at which a country will reach its darkest/maximum color     |
 | `minR`, `minG`, `minB`    | `int`               | Define color for countries with a single visit (lightest/minimum)            |
@@ -47,8 +46,7 @@ Here are the global parameters:
 | `bgR`, `bgG`, `bgB`       | `int`               | Define background color                                                      |
 | `stR`, `stG`, `stB`       | `int`               | Define country stroke color                                                  |
 | `fromBg`                  | `boolean`           | If `true`, min color defaults to background color                            |
-| `scaleY`                  | `float`             | Scales the map vertically                                                    |
-| `anipationPathMode`       | `AnimationPathMode` | Defines path drawing method. Can be `LINE`, `ARC` or `SHALLOW_ARC`           |
+| `animationPathMode`       | `AnimationPathMode` | Defines path drawing method. Can be `LINE`, `ARC` or `SHALLOW_ARC`           |
 | `animationPathTime`       | `int`               | Time (in milliseconds) it takes to trace a bath between two countries        |
 | `animationLoop`           | `boolean`           | Whether to loop the travel animations or not                                 |
 | `animationShowMarker`     | `boolean`           | Whether to show a marker at the current point of travel                      |
@@ -57,3 +55,33 @@ Here are the global parameters:
 | `animationFadeIn`         | `boolean`           | `true` to fade borders in; `false` to fade them out                          |
 | `animationRadiusFactor`   | `float`             | Determines shallowness of `SHALLOW_ARC`. Minimum is 1 (semicircle)           |
 | `animationGradualColor`   | `boolean`           | Do we color countries as we visit them (in "real-time")?                     |
+| `debug`                   | `boolean`           | Enable debug logs for OSC callibration?                                      |
+| `syncTime`                | `float`             | Approximate time in seconds between sync requests to server                  |
+| `scaleY`                  | `float`             | Scales the map vertically                                                    |
+| `yOffset`                 | `float`             | Offsets the map from the top of the screen                                   |
+| `minLat`, `maxLat`        | `float`             | Determines minimum and maximum latitudes for coordinate scaling              |
+
+The following global parameters are exposed via OSC:
+
+| Parameter                 | OSC Address               | Expected Types *    |
+|:-------------------------:|:-------------------------:|:-------------------:|
+| `pathR`, `pathG`, `pathB` | `/pathColor`              | `int`, `int`, `int` |
+| `maxTally`                | `/maxTally`               | `int`               |
+| `minR`, `minG`, `minB`    | `/minColor`               | `int`, `int`, `int` |
+| `maxR`, `maxG`, `maxB`    | `/maxColor`               | `int`, `int`, `int` |
+| `bgR`, `bgG`, `bgB`       | `/bgColor`                | `int`, `int`, `int` |
+| `stR`, `stG`, `stB`       | `/strokeColor`            | `int`, `int`, `int` |
+| `fromBg`                  | `/fromBg`                 | `int`               |
+| `animationPathMode`       | `/animation/pathMode`     | `int`               |
+| `animationPathTime`       | `/animation/pathTime`     | `int`               |
+| `animationFadeBorders`    | `/animation/fadeBorders`  | `float`             |
+| `animationFadeStep`       | `/animation/fadeStep`     | `float`             |
+| `animationFadeIn`         | `/animation/fadeIn`       | `int`               |
+| `animationRadiusFactor`   | `/animation/radiusFactor` | `float`             |
+| `debug`                   | `/debug`                  | `int`               |
+| `syncTime`                | `/syncTime`               | `float`             |
+| `scaleY`                  | `/scaleY`                 | `float`             |
+| `yOffset`                 | `/yOffset`                | `float`             |
+| `minLat`, `maxLat`        | `/latRange`               | `float`, `float`    |
+
+- (*) `boolean` parameters are converted from `int` OSC messages because otherwise the thing breaks.
