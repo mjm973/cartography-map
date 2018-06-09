@@ -54,17 +54,18 @@ int getTally(JSONArray journey, int n) {
 
 // Requests clear from within the Display App
 void requestClear() {
-    // If we are overriding, don't even bother
+  // If we are overriding, don't even bother
   if (panic) {
     return;
   }
-  
+
   GetRequest req = new GetRequest("http://localhost:4242/api/clear");
-  
+
   try {
     req.send();
     println("Clear request sent!");
-  } catch (Exception e) {
+  } 
+  catch (Exception e) {
     println("Clear request failed.");
     return;
   }
@@ -76,20 +77,22 @@ void requestSync() {
   if (panic) {
     return;
   }
-  
+
   GetRequest req = new GetRequest("http://localhost:4242/api/sync");
   req.addHeader("Accept", "application/json");
-  
+
   // Make sure we abort on failure
   try {
     req.send();
-  } catch (Exception e) {
+    // We should get JSON data, so we parse it
+    journeys = parseJSONArray(req.getContent());
+  } 
+  catch (Exception e) {
     println("Connection to server failed.");
     return;
   }  
 
-  // We should get JSON data, so we parse it
-  journeys = parseJSONArray(req.getContent());
+
 
   if (!animationGradualColor) {
     // We clear our map before tallying again, if doing instant fill-in
