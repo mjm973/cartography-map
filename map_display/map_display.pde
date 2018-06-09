@@ -19,6 +19,8 @@ float scaleFactor; // Caching the math to rescale our svg
 
 double animationLastTick = 0; // Used to keep track of the last time the index increased
 
+final int oscPort = 9999;
+
 enum AnimationPathMode {
   LINE, ARC, SHALLOW_ARC
 }

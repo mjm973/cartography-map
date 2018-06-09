@@ -51,5 +51,5 @@ void setupComms() {
   //server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
 
   // Set up OSC Communication
-  osc = new OscP5(this, 9999);
+  osc = new OscP5(this, oscPort);
 }

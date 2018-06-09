@@ -1,8 +1,23 @@
 let tap = null; // To determine whether we have a single or double tap
 let journey = []; // Keeps track of the countries selected to be sent to the server
+const yScale = 1.4125;
+
+// Checks if we have less than the maximum number of countries
+const tooManyCountries = () => {
+  let realList = journey.filter((c) => {
+    return !(c === null)
+  })
+
+  return !(realList.length < 9)
+}
 
 // Helper to add a country to the journey array and list
 const addCountry = (c, flag) => {
+  // Make sure we don't add too many countries
+  if (tooManyCountries()) {
+    return
+  }
+
   // Style the country
   c.classList.add('selected');
   // Add it but only if it isn't already the latest point in the journey
@@ -113,7 +128,7 @@ const addCountryEvents = (country, tag, flag) => {
 
     // Show country tag but only if we are single touching
     if (e.touches.length === 1) {
-      e.preventDefault();
+    //  e.preventDefault();
 
       let touch = e.touches[0];
       tag.style.left = `${touch.clientX}px`;
@@ -125,7 +140,8 @@ const addCountryEvents = (country, tag, flag) => {
   });
   // 'touchend' handles the end of a touch (hide tag)
   country.addEventListener('touchend', (e) => {
-    tag.classList.add('hidden');
+    // tag.classList.add('hidden');
+    clearTags();
   });
 
 }
@@ -201,7 +217,7 @@ const tagCountries = (data) => {
 
     // Create a tag for it
     let tag = document.createElement('div');
-    tag.classList.add('hidden', 'tag-bg');
+    tag.classList.add('hidden', 'tag-bg', 'tag');
     let p = document.createElement('p');
     p.classList.add('tag-text');
     let txt = document.createTextNode(country.id);
@@ -298,13 +314,20 @@ let xPos = 0, yPos = 0;
 let xBuf = 0, yBuf = 0;
 let w = 0, h = 0;
 
+const multScale = (scale, mult) => {
+  return {
+    x: scale.x * mult,
+    y: scale.y * mult
+  }
+}
+
 const resetView = () => {
   mapScale = 1;
   xPos = 0;
   yPos = 0;
 
   let map = document.getElementById('map-container')
-    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale.x}, ${mapScale.y})`;
 }
 
 const scaleStrokes = (scale) => {
@@ -316,12 +339,23 @@ const scaleStrokes = (scale) => {
   });
 }
 
+// Because events are weird so let's brute force this thing
+const clearTags = () => {
+  let tags = document.getElementsByClassName('tag')
+  let tagList = Array.from(tags)
+
+  tagList.forEach((tag) => {
+    tag.classList.add('hidden')
+  })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadData(tagCountries);
 
   let map = document.getElementById('map-container')
 
   let svg = map.firstChild;
+
   w = map.clientWidth;
   h = map.clientHeight;
 
@@ -329,6 +363,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('orientationchange', (e) => {
     w = map.clientWidth;
     h = map.clientHeight;
+  })
+
+  // Disable pinch-zooming on country list
+  let listArea = document.getElementById('list-container')
+  listArea.addEventListener('touchmove', (e) => {
+    if (e.touches.length >= 2) {
+      e.preventDefault()
+    }
   })
 
   map.addEventListener('touchstart', (e) => {
@@ -340,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
   map.addEventListener('touchend', (e) => {
     mapScale = scaleBuffer;
     if (e.touches.length === 0) {
+      clearTags();
       xPos = xBuf;
       yPos = yBuf;
       touchBuffer = [];
@@ -349,6 +392,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.touches.length >= 2) {
       let scale = getPinchScale(e);
       scaleBuffer = mapScale*scale;
+      // map.style.backgroundColor = "red"
+
       scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
 
       scaleStrokes(scaleBuffer);
@@ -376,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
         yBuf = upperY;
       }
     }
-    map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
+    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+
   })
 })
