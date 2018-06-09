@@ -100,6 +100,15 @@ div.tag-bg {
   flex-direction: column;
 }
 
+.container button {
+  background-color: #cdcdcd;
+  margin: 0 5px;
+}
+
+.container.vertical>button {
+  background-color: rgb(14, 223, 65);
+}
+
 .scroll {
   overflow: scroll;
 }
@@ -125,10 +134,18 @@ div.tag-bg {
   height: 10%;
   flex-grow: 1;
   overflow-y: scroll;
+  padding-left: 60px;
 }
 
 #list-container img {
   object-fit: scale-down;
+}
+
+#list-container h2 {
+  text-align: center;
+  font-size: 3em;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 #list-container li {
@@ -152,8 +169,13 @@ div.tag-bg {
   padding: 10px 0;
 }
 
+#list-container .container.vertical {
+  height: auto;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
 #list-container button {
-  width: 30%;
   flex-grow: 1;
 }
 
@@ -201,13 +223,15 @@ div.tag-bg {
   } */
 
   #list-container .container {
-    height: 75px;
+    height: 8vh;
+
     justify-content: space-around;
     padding: 10px 0;
   }
 
   #list-container button {
-    height: 75px;
-    font-size: 2em;
+    height: 8vh;
+
+    font-size: 3em;
   }
 }

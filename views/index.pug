@@ -11,15 +11,12 @@ html
         include ../public/svg/countries_lowres.svg
         
     div(id="list-container" class="full-h container vertical")
+      h2 Your Journey
       ol(id="country-list")  
-      div(class="container")
-        button(onclick="popCountry()") Undo
-        button(onclick="postJourney()") Submit
-        button(onclick="resetView()") Reset
-    //-div(id="data" data-master=master)
-        
-    //- script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/p5.min.js")
-    //- script(src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.1/addons/p5.dom.min.js")
-    //- script(src="/static/js/socket.io.slim.js")
+      div(class="container vertical")
+        button(onclick="postJourney()") SUBMIT
+        div(class="container")
+          button(onclick="popCountry()") UNDO
+          button(onclick="resetView()") RESET
+
     script(src="/static/js/main.js") 
-    //- script(src="/static/js/map.js") 

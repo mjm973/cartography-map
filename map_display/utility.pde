@@ -54,9 +54,21 @@ int getTally(JSONArray journey, int n) {
 
 // Requests full journey data from the server
 void requestSync() {
+  // If we are overriding, don't even bother
+  if (panic) {
+    return;
+  }
+  
   GetRequest req = new GetRequest("http://localhost:4242/api/sync");
   req.addHeader("Accept", "application/json");
-  req.send();
+  
+  // Make sure we abort on failure
+  try {
+    req.send();
+  } catch (Exception e) {
+    println("Connection to server failed.");
+    return;
+  }  
 
   // We should get JSON data, so we parse it
   journeys = parseJSONArray(req.getContent());
@@ -165,5 +177,15 @@ PVector countryCoord(JSONArray journey, int index) {
   } 
   catch (Exception e) {
     return new PVector();
+  }
+}
+
+// I don't want to write this if statement 200826926781 times (jk it's just 2 so far)
+JSONArray getJourneyData() {
+  // We use override data if panicking, real data otherwise
+  if (panic) {
+    return override;
+  } else {
+    return journeys;
   }
 }

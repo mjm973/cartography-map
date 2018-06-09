@@ -1,3 +1,28 @@
+// Encapsulates the drawing of the map
+void drawMap() {
+  // Background is any color we tell it to be
+  background(bgR, bgG, bgB); 
+  // Moving and scaling the map to its proper position, size, and aspect ratio
+  translate(0, yOffset);
+  scale(scaleFactor);
+  scale(1, scaleY);
+
+  // Drawing the borders
+  stroke(map(animationFadeBorders, 0, 1, bgR, stR), 
+    map(animationFadeBorders, 0, 1, bgG, stG), 
+    map(animationFadeBorders, 0, 1, bgB, stB));
+
+  // Iterate and draw each country separately
+  for (String k : countries.keySet()) {
+    Country c = countries.get(k);
+
+    // diableStyle allows us to override the SVG's built-in styling
+    c.disableStyle();
+    fill(mapColor(c.counting));
+    c.draw();
+  }
+}
+
 // Fades country borders in and out
 void fadeBorders() {
   if (animationFadeIn) {
@@ -13,8 +38,11 @@ void animationTick() {
   if (millis() - animationLastTick >= animationPathTime) {
     animationLastTick += animationPathTime;
 
+    // Real data or override data?
+    JSONArray journeyData = getJourneyData();
+
     // Make sure we don't tick the fist entry on empty data
-    if (journeys == null || journeys.getJSONArray(0).size() == 0) {
+    if (journeyData == null || journeyData.getJSONArray(0).size() == 0) {
       return;
     }
 
@@ -22,7 +50,7 @@ void animationTick() {
       journeyIndices.increment(i);
       if (animationGradualColor) {
         int index = journeyIndices.get(i);
-        JSONArray journey = journeys.getJSONArray(i);
+        JSONArray journey = journeyData.getJSONArray(i);
         tallyTravel(journey, index);
       }
     }
@@ -31,8 +59,11 @@ void animationTick() {
 
 // Function to animate moving planes/points/things across the paths
 void animateJourneys() {
-  // Make sure we have retrieved journey dtaa already!
-  if (journeys == null) {
+  // Are we using real-time data or override data?
+  JSONArray journeyData = getJourneyData();
+
+  // Make sure we have retrieved journey data already!
+  if (journeyData == null) {
     return;
   }
 
@@ -40,10 +71,10 @@ void animateJourneys() {
   float t = (float)(millis() % animationPathTime) / (float)animationPathTime;
 
   // Iterate over our data
-  for (int i = 0; i < journeys.size(); ++i) {
+  for (int i = 0; i < journeyData.size(); ++i) {
     float localT = t;
     // Let's look at our journey
-    JSONArray journey = journeys.getJSONArray(i);
+    JSONArray journey = journeyData.getJSONArray(i);
     // Empty journey means no data, let's get out!
     if (journey.size() == 0) {
       return;

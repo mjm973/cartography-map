@@ -15,6 +15,17 @@ void oscEvent(OscMessage message) {
       }
     }
     break;
+    // [int] -> panic
+  case "/panic":
+    if (message.checkTypetag("i")) {
+      // Panic can only be set if enabled
+      // If disabled, it will default to false
+      panic = (message.get(0).intValue() == 1) && enablePanic;
+      if (debug) {
+        println(panic ? "Panic Mode: Override Engaged" : "Panic Mode Disengaged");
+      }
+    }
+    break;
     // [float] -> scaleY
   case "/scaleY":
     if (message.checkTypetag("f")) {
@@ -206,7 +217,7 @@ void oscEvent(OscMessage message) {
     }
     break;
     // [int] -> animationColorThreshold
-    case "/animation/colorThreshold":
+  case "/animation/colorThreshold":
     if (message.checkTypetag("i")) {
       animationColorThreshold = message.get(0).intValue();
 

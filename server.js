@@ -18,12 +18,8 @@ let journeys = [];
 // ==== USER ROUTES ====
 // Base route: serves the map to the users
 app.get('/', (cReq, cRes) => {
-  cRes.render('index', {master: 0});
+  cRes.render('index');
 });
-
-// app.get('/all', (cReq, cRes) => {
-//   cRes.render('index', {master: 1});
-// });
 
 // ==== API ROUTES ====
 // API submit route: receives journey data from users
@@ -57,6 +53,13 @@ app.post('/api/update', (cRes, cReq) => {
   }
 })
 
+// API download route: downloads the complete journey list held currently by the server
+app.get('/api/download', (cReq, cRes) => {
+  let jString = JSON.stringify(journeys)
+  console.log(jString)
+  cRes.render('download', {data: JSON.stringify(journeys)})
+})
+
 // API clear route: clears all journeys the server has recorded
 // Set up as a GET request for easy access
 app.get('/api/clear', (cReq, cRes) => {
@@ -71,24 +74,3 @@ app.get('/*', (cReq, cRes) => {
 });
 
 const server = app.listen(port, () => console.log(`Server listening on port ${port}...`))
-
-// const io = require('socket.io').listen(server);
-//
-//
-// io.on('connection', (socket) => {
-//   console.log(`Socket ${socket.id} connected!`)
-//
-//   socket.on('point', (color, x, y) => {
-//     console.log(`Socket ${socket.id}: ${x},${y}`)
-//
-//     io.emit('point', socket.id, color, x, y);
-//   })
-//
-//   socket.on('clear', (id) => {
-//     io.emit('clear', id);
-//   })
-// })
-
-// io.on('point', (socket, color, x, y) => {
-//   console.log(`Socket ${socket.id}: ${x},${y}`)
-// })

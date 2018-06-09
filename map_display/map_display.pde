@@ -4,13 +4,15 @@ import oscP5.*;
 import codeanticode.syphon.*;
 import http.requests.*;
 
-//SyphonServer server;
+//SyphonServer server; // Uncomment on Mac to enable Syphon
 OscP5 osc;
 NetAddress remote;
 
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
 JSONArray journeys; // Our data!
+JSONArray override; // Override data for panic situation
+boolean enablePanic = true; // Allows enabling panic if override data is available.
 IntList journeyIndices; // To keep track where we are in each journey
 
 float scaleFactor; // Caching the math to rescale our svg
@@ -60,79 +62,35 @@ boolean animationGradualColor = true; // Do we fill in the countries gradually a
 float animationColorStep = 0.05; // How fast we fade between country colors?
 int animationColorThreshold = 1; // How many visits correspond to a change in color?
 
-// = CALLIBRATION =
+// = CALIBRATION =
 boolean debug = false; // Controls print statements for callibration and debug
 float syncTime = 4; // How long between syncs?
 float scaleY = 1.4125; // Stretches the map vertically. 1.4125 is default
 float yOffset = 64; // Offset from the top to position map. 64 is default (MacBook fullscreen)
-// Latitude range for coordnate scaling
-float maxLat = 85;
-float minLat = -85;
+// Latitude range for coordinate scaling
+float maxLat = 83;
+float minLat = -90;
+boolean panic = false; // Flip to true to engage preset override
 
 void setup() {
-  size(1200, 600, P2D);
-  //fullScreen(P2D);
-  map = loadShape("countries_lowres.svg");
+  size(1200, 600, P2D); // Uncomment for windowed/debug
+  //fullScreen(P2D); // Uncomment for fullscreen
 
-  // Create our hashmap of countries
-  countries = new HashMap<String, Country>();
-  int count = map.getChild(0).getChildCount();
-
-  // Iterate through our SVG to extract individual shapes
-  for (int i = 0; i < count; ++i) {
-    PShape country = map.getChild(0).getChild(i);
-    Country c = new Country(country);
-    countries.put(c.name, c);
-  }
-
-  // Mathemagics to properly scale our map to the display size
-  float svgAspect = map.width/map.height;
-  float scaledFullHeight = svgAspect*height;
-  if (scaledFullHeight > width) {
-    scaleFactor = width/map.width;
-  } else {
-    scaleFactor = svgAspect;
-  }
-
-  // Create our list with journey states
-  journeyIndices = new IntList();
-
-  // create Syphon server
-  //server = new SyphonServer(this, "Cartography");
-
-  // Set up OSC Communication
-  osc = new OscP5(this, 9999);
-  //remote = new NetAddress(
+  // Map and data loading and setup
+  setupMap();
+  // Panic mode override loading
+  loadOverride();
+  // Syphon and OSC initialization
+  setupComms();
 }
 
 void draw() {
-  background(bgR, bgG, bgB);
-  translate(0, yOffset);
-  scale(scaleFactor);
-  scale(1, scaleY);
-
-  stroke(map(animationFadeBorders, 0, 1, bgR, stR), 
-    map(animationFadeBorders, 0, 1, bgG, stG), 
-    map(animationFadeBorders, 0, 1, bgB, stB));
-
-  // Iterate and draw each country separately
-  for (String k : countries.keySet()) {
-    Country c = countries.get(k);
-
-    // diableStyle allows us to override the SVG's built-in styling
-    c.disableStyle();
-
-    fill(mapColor(c.counting));
-
-    c.draw();
-  }
-
-  // Tick our travels forward
-  animationTick();
-
+  // Draw our map!
+  drawMap();
   // Fade borders in/out
   fadeBorders();
-
+  // Tick our travels forward
+  animationTick();
   // Animation weeeeeee!
   animateJourneys();
 
@@ -142,9 +100,7 @@ void draw() {
   }
 
   // Send image data through Syphon!
-  //server.sendScreen();
-
-  //println(frameCount);
+  //server.sendScreen(); // Uncomment on Mac to enable Syphon
 }
 
 void mousePressed() {
@@ -160,6 +116,13 @@ void keyPressed() {
   case 'q':
   case 'Q':
     animationFadeIn = !animationFadeIn;
+    break;
+  case 'x':
+  case 'X':
+    // Only allow panic mode if enabled (i.e. if there is override data)
+    if (enablePanic) {
+      panic = !panic;
+    }
     break;
   }
 }
