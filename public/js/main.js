@@ -11,6 +11,15 @@ const tooManyCountries = () => {
   return !(realList.length < 9)
 }
 
+// Returns the last country, skipping null entries
+const lastCountry = () => {
+  let realList = journey.filter((c) => {
+    return !(c === null)
+  })
+
+  return realList[realList.length-1]
+}
+
 // Helper to add a country to the journey array and list
 const addCountry = (c, flag) => {
   // Make sure we don't add too many countries
@@ -21,7 +30,7 @@ const addCountry = (c, flag) => {
   // Style the country
   c.classList.add('selected');
   // Add it but only if it isn't already the latest point in the journey
-  if (journey[journey.length-1] !== c.id) {
+  if (lastCountry() !== c.id) {
     // Add to journey array
     journey.push(c.id);
 
@@ -138,6 +147,7 @@ const addCountryEvents = (country, tag, flag) => {
       tag.classList.add('hidden');
     }
   });
+
   // 'touchend' handles the end of a touch (hide tag)
   country.addEventListener('touchend', (e) => {
     // tag.classList.add('hidden');
@@ -148,16 +158,11 @@ const addCountryEvents = (country, tag, flag) => {
 
 // Helper to convert from (longitude, latitude) to normalized SVG (x,y) coordinates
 const earthToSvg = (_lon, _lat) => {
-  // console.log(typeof _lon, typeof _lat);
   let lon = parseFloat(_lon);
   let lat = parseFloat(_lat);
-  // console.log(typeof lon, typeof lat);
 
   let tx = (lon + 180) / 360;
   let ty = 1 - (lat + 85) / 170; // Latitudes close to 90 are truncated
-  // let mapSvg = document.getElementById('map-svg');
-  // let w = mapSvg.getAttribute('width');
-  // let h = mapSvg.getAttribute('height');
 
   return {
     x: tx,
@@ -268,7 +273,7 @@ const postJourney = () => {
   })
 }
 
-const getPinchScale = (e) => {
+const getPinch = (e) => {
   e.preventDefault();
   let x1 = e.touches.item(0).screenX;
   let y1 = e.touches.item(0).screenY;
@@ -287,7 +292,11 @@ const getPinchScale = (e) => {
   let dist = Math.sqrt(dx*dx + dy*dy);
   let pdist = Math.sqrt(pdx*pdx + pdy*pdy);
 
-  return dist/pdist;
+  return {
+    scale: dist/pdist,
+    x: (x1 + x2) / 2,
+    y: (y1 + y2) / 2
+  };
 }
 
 const getSlideDelta = (e) => {
@@ -310,16 +319,13 @@ const getSlideDelta = (e) => {
 let touchBuffer = [];
 let mapScale = 1;
 let scaleBuffer;
+let pinchCenter= {
+  x: 1, y: 1,
+  xp: 0, yp: 0
+}
 let xPos = 0, yPos = 0;
 let xBuf = 0, yBuf = 0;
 let w = 0, h = 0;
-
-const multScale = (scale, mult) => {
-  return {
-    x: scale.x * mult,
-    y: scale.y * mult
-  }
-}
 
 const resetView = () => {
   mapScale = 1;
@@ -327,7 +333,7 @@ const resetView = () => {
   yPos = 0;
 
   let map = document.getElementById('map-container')
-    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale.x}, ${mapScale.y})`;
+    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
 }
 
 const scaleStrokes = (scale) => {
@@ -378,6 +384,16 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < e.touches.length; ++i) {
       touchBuffer.push(e.touches[i]);
     }
+
+    // let t = e.touches[0];
+    // console.log(`(${t.clientX}, ${t.clientY})`)
+    if (e.touches.length === 2) {
+      let pinch = getPinch(e);
+      pinchCenter = {
+        x: pinch.x,
+        y: pinch.y
+      }
+    }
   })
   map.addEventListener('touchend', (e) => {
     mapScale = scaleBuffer;
@@ -390,11 +406,32 @@ document.addEventListener('DOMContentLoaded', () => {
   })
   map.addEventListener('touchmove', (e) => {
     if (e.touches.length >= 2) {
-      let scale = getPinchScale(e);
+      let pinch = getPinch(e);
+      let scale = pinch.scale;
       scaleBuffer = mapScale*scale;
-      // map.style.backgroundColor = "red"
 
       scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
+      //
+      // xBuf = (-pinchCenter.x)*(scaleBuffer)
+      // yBuf = (pinch.y)*(scaleBuffer-1)/2;
+
+      // MATH SORCERY I ONLY HALF UNDERSTAND
+      let upperX = w*(scaleBuffer-1)/2;
+      let upperY = h*(scaleBuffer-1)/(2);
+      let lowerY = -upperY;
+
+      if (xBuf < 0) {
+        xBuf = 0;
+      } else if (xBuf > upperX) {
+        xBuf = upperX;
+      }
+
+      // Y is different because map is centered vertically I think?
+      if (yBuf < lowerY) {
+        yBuf = 0 - h*(scaleBuffer-1)/(2);
+      } else if (yBuf > upperY) {
+        yBuf = upperY;
+      }
 
       scaleStrokes(scaleBuffer);
     } else {
@@ -421,7 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
         yBuf = upperY;
       }
     }
-    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+    map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
 
   })
 })
