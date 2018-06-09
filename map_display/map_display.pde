@@ -124,5 +124,8 @@ void keyPressed() {
       panic = !panic;
     }
     break;
+  case ' ':
+    requestClear();
+    break;
   }
 }

@@ -16,19 +16,19 @@ void setup() {
 void draw() {
   background(0, map(mouseX, 0, width, 0, 255), map(mouseY, 0, height, 0, 255));
   
-  OscMessage off = new OscMessage("/yOffset");
-  off.add(float(mouseY));
-  OscMessage scale = new OscMessage("/scaleY");
-  scale.add(map(mouseX, 0, width, 0.5, 1.5));
+  //OscMessage off = new OscMessage("/yOffset");
+  //off.add(float(mouseY));
+  //OscMessage scale = new OscMessage("/scaleY");
+  //scale.add(map(mouseX, 0, width, 0.5, 1.5));
   
-  osc.send(off, mapDisplay);
-  osc.send(scale, mapDisplay);
+  //osc.send(off, mapDisplay);
+  //osc.send(scale, mapDisplay);
 }
 
 void mousePressed() {
   debug = !debug;
   
-  OscMessage mess = new OscMessage("/debug");
+  OscMessage mess = new OscMessage("/clear");
   mess.add(debug ? 1 : 0);
   osc.send(mess, mapDisplay);
 }

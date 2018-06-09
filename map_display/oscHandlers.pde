@@ -26,6 +26,10 @@ void oscEvent(OscMessage message) {
       }
     }
     break;
+    // [void]
+  case "/clear":
+    requestClear();
+    break;
     // [float] -> scaleY
   case "/scaleY":
     if (message.checkTypetag("f")) {

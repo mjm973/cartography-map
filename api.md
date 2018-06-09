@@ -82,9 +82,10 @@ The following global parameters are exposed via OSC:
 | `animationFadeStep`       | `/animation/fadeStep`       | `float`             | `0..1`       |
 | `animationFadeIn`         | `/animation/fadeIn`         | `int`               | `0..1`       |
 | `animationRadiusFactor`   | `/animation/radiusFactor`   | `float`             | `>= 1`       |
-| `animationColorStep`      | `/animation.colorStep`      | `float`             | `0..1`       |
+| `animationColorStep`      | `/animation/colorStep`      | `float`             | `0..1`       |
 | `animationColorThreshold` | `/animation/colorThreshold` | `int`               | `>= 1`       |
 | `debug`                   | `/debug`                    | `int`               | `0..1`       |
+| `requestClear()` **       | `/clear`                    | `(none)`            | `N/A`        |
 | `syncTime`                | `/syncTime`                 | `float`             | `>= 1`       |
 | `scaleY`                  | `/scaleY`                   | `float`             | `> 0`        |
 | `yOffset`                 | `/yOffset`                  | `float`             | `>= 0`       |
@@ -92,3 +93,4 @@ The following global parameters are exposed via OSC:
 | `panic`                   | `/panic`                    | `int`               | `0..1`       |
 
 - (*) `boolean` parameters are converted from `int` OSC messages because otherwise the thing breaks.
+- (**) Sending any OSC message to `/clear` will call `requestClear` and issue a clear command to the server. It is a blocking operation and will freeze the app for a split second, so I'd recommend using a phone browser and going to `/api/clear` directly

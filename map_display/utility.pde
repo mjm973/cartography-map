@@ -52,6 +52,24 @@ int getTally(JSONArray journey, int n) {
   return -1;
 }
 
+// Requests clear from within the Display App
+void requestClear() {
+    // If we are overriding, don't even bother
+  if (panic) {
+    return;
+  }
+  
+  GetRequest req = new GetRequest("http://localhost:4242/api/clear");
+  
+  try {
+    req.send();
+    println("Clear request sent!");
+  } catch (Exception e) {
+    println("Clear request failed.");
+    return;
+  }
+}
+
 // Requests full journey data from the server
 void requestSync() {
   // If we are overriding, don't even bother
