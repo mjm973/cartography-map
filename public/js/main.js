@@ -137,11 +137,11 @@ const addCountryEvents = (country, tag, flag) => {
 
     // Show country tag but only if we are single touching
     if (e.touches.length === 1) {
-    //  e.preventDefault();
+     e.preventDefault();
 
       let touch = e.touches[0];
-      tag.style.left = `${touch.clientX}px`;
-      tag.style.top = `${touch.clientY - 75}px`;
+      tag.style.left = `${touch.clientX - 150}px`;
+      tag.style.top = `${touch.clientY - 150}px`;
       tag.classList.remove('hidden');
     } else {
       tag.classList.add('hidden');
@@ -329,8 +329,11 @@ let w = 0, h = 0;
 
 const resetView = () => {
   mapScale = 1;
+  scaleBuffer = 0;
   xPos = 0;
+  xBuf = 0;
   yPos = 0;
+  yBuf = 0;
 
   let map = document.getElementById('map-container')
     map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
@@ -411,8 +414,14 @@ document.addEventListener('DOMContentLoaded', () => {
       scaleBuffer = mapScale*scale;
 
       scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
-      //
-      // xBuf = (-pinchCenter.x)*(scaleBuffer)
+
+      let dx = pinch.x - pinchCenter.x;
+      let dy = pinch.y - pinchCenter.y;
+
+      xBuf = xPos + dx;
+      yBuf = yPos + dy;
+
+      // xBuf = xPos-pinchCenter.x
       // yBuf = (pinch.y)*(scaleBuffer-1)/2;
 
       // MATH SORCERY I ONLY HALF UNDERSTAND

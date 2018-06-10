@@ -40,9 +40,11 @@ svg {
 div.tag-bg {
   fill: black;
   /* width: 150px; */
-  height: 25px;
+  height: 3em;
+  width: 10em;
   padding: 3px;
   alignment-baseline: middle;
+  font-size: 2em;
 
   background-color: black;
   display: flex;
@@ -102,7 +104,7 @@ div.tag-bg {
 
 .container button {
   background-color: #cdcdcd;
-  margin: 0 5px;
+  margin: 2px 2px;
 }
 
 .container.vertical>button {
@@ -134,7 +136,8 @@ div.tag-bg {
   height: 10%;
   flex-grow: 1;
   overflow-y: scroll;
-  padding-left: 60px;
+  padding-left: 30px;
+  padding-right: 20px;
 }
 
 #list-container img {
@@ -143,7 +146,7 @@ div.tag-bg {
 
 #list-container h2 {
   text-align: center;
-  font-size: 3em;
+  font-size: 1.5em;
   margin-top: 20px;
   margin-bottom: 10px;
 }
@@ -164,9 +167,9 @@ div.tag-bg {
 }
 
 #list-container .container {
-  height: 25px;
-  justify-content: space-around;
-  padding: 10px 0;
+  height: 10vh;
+  /* justify-content: space-around; */
+  /* padding: 10px 0; */
 }
 
 #list-container .container.vertical {
@@ -177,6 +180,7 @@ div.tag-bg {
 
 #list-container button {
   flex-grow: 1;
+  height: 10vh;
 }
 
 @media (orientation: portrait) {
@@ -231,7 +235,21 @@ div.tag-bg {
 
   #list-container button {
     height: 8vh;
-
     font-size: 3em;
+    margin: 0 5px;
+  }
+
+  #list-container h2 {
+    text-align: center;
+    font-size: 3em;
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  #list-container ol {
+    height: 10%;
+    flex-grow: 1;
+    overflow-y: scroll;
+    padding-left: 60px;
   }
 }
