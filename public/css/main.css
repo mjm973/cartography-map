@@ -7,6 +7,11 @@ html, body {
   touch-action: manipulation;
 }
 
+h2 {
+  font-family: "Titillium Web", sans-serif;
+
+}
+
 path {
   stroke: black;
   fill: gray;
@@ -35,6 +40,7 @@ svg {
   dominant-baseline: middle;
 
   color: white;
+  font-family: "Raleway", sans-serif;
 }
 
 div.tag-bg {
@@ -108,10 +114,10 @@ div.tag-bg {
 .container button {
   background-color: #cdcdcd;
   margin: 2px 2px;
-}
+  color: white;
+  border-radius: 2vmin;
 
-.container.vertical>button {
-  background-color: rgb(14, 223, 65);
+  font-family: "Raleway", sans-serif;
 }
 
 .scroll {
@@ -132,7 +138,7 @@ div.tag-bg {
   right: 0;
   top: 0;
   z-index: 1;
-  background-color: whitesmoke;
+  background-color: #dcbf35;
 }
 
 #list-container ol {
@@ -159,6 +165,7 @@ div.tag-bg {
   padding: 2px 0;
   /* border-top: 2px solid black; */
   border-bottom: 2px solid black;
+  font-family: "Raleway", sans-serif;
 }
 
 #list-container li>div {
@@ -184,6 +191,18 @@ div.tag-bg {
 #list-container button {
   flex-grow: 1;
   height: 10vh;
+}
+
+#submit {
+  background-color: #05943c;
+}
+
+#undo {
+  background-color: #830302;
+}
+
+#reset {
+  background-color: #0f1da0;
 }
 
 @media (orientation: portrait) {

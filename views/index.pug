@@ -2,7 +2,8 @@ doctype
 html
   head 
     meta(lang="en" dir="ltr")
-    title 
+    title Cartography
+    link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway|Sunflower:300|Titillium+Web")
     link(rel="stylesheet" href="/static/css/main.css")
   
   body
@@ -11,12 +12,12 @@ html
         include ../public/svg/countries_lowres.svg
         
     div(id="list-container" class="full-h container vertical")
-      h2 Your Journey
+      h2 Your Map
       ol(id="country-list")  
       div(class="container vertical")
-        button(onclick="postJourney()") SUBMIT
+        button(id="submit" onclick="postJourney()") SUBMIT
         div(class="container")
-          button(onclick="popCountry()") UNDO
-          button(onclick="resetView()") RESET
+          button(id="undo" onclick="popCountry()") UNDO
+          button(id="reset" onclick="resetView()") RESET
 
     script(src="/static/js/main.js") 
