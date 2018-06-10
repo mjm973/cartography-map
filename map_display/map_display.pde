@@ -10,9 +10,11 @@ NetAddress remote;
 
 PShape map; // Our SVG map
 HashMap<String, Country> countries; // Map split into individual countries for individual styling
-JSONArray journeys; // Our data!
-JSONArray override; // Override data for panic situation
+JSONArray journeys = null; // Our data!
+JSONArray override = null; // Override data for panic situation
 boolean enablePanic = true; // Allows enabling panic if override data is available.
+int panicStep = 0; // Used to step through override journeys sequentially
+
 IntList journeyIndices; // To keep track where we are in each journey
 
 float scaleFactor; // Caching the math to rescale our svg
@@ -124,10 +126,20 @@ void keyPressed() {
     // Only allow panic mode if enabled (i.e. if there is override data)
     if (enablePanic) {
       panic = !panic;
+      if (panic) {
+        clearHeatmap();
+        journeyIndices.clear();
+        journeyIndices.resize(override.size());
+        tallyFirst(override, 0, 1);
+      }
     }
     break;
   case ' ':
     requestClear();
+    break;
+  case 'z':
+  case 'Z':
+    stepPanic();
     break;
   }
 }

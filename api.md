@@ -91,6 +91,8 @@ The following global parameters are exposed via OSC:
 | `yOffset`                 | `/yOffset`                  | `float`             | `>= 0`       |
 | `minLat`, `maxLat`        | `/latRange`                 | `float`, `float`    | `< 0`, `> 0` |
 | `panic`                   | `/panic`                    | `int`               | `0..1`       |
+| `stepPanic()` ***         | `/step`                     | `(none)`            | `N/A`        |
 
 - (*) `boolean` parameters are converted from `int` OSC messages because otherwise the thing breaks.
-- (**) Sending any OSC message to `/clear` will call `requestClear` and issue a clear command to the server. It is a blocking operation and will freeze the app for a split second, so I'd recommend using a phone browser and going to `/api/clear` directly
+- (**) Sending any OSC message to `/clear` will call `requestClear` and issue a clear command to the server. It is a blocking operation and will freeze the app for a split second, so I'd recommend using a phone browser and going to `/api/clear` directly.
+- (***) Likewise, any OSC message to `/step` should step forward using `stepPanic` and start the next journey in the override. That one shouldn't slow things down.

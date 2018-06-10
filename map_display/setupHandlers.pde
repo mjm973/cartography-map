@@ -33,6 +33,7 @@ void loadOverride() {
     // Normally, override data should be loaded
     override = loadJSONArray("override.json");
     println("Loaded override data!");
+    println(String.format("Data contains %d journeys.", override.size()));
   } 
   catch (Exception e) {
     // If that fails, we leave it null

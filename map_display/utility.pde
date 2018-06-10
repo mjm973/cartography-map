@@ -35,6 +35,13 @@ color mapColor(float count) {
     );
 }
 
+// Steps forward in panic mode
+void stepPanic() {
+  if (panic) {
+    panicStep = constrain(panicStep + 1, 0, override.size()-1);
+  }
+}
+
 // Colors in country number n in a given journey
 void tallyTravel(JSONArray journey, int n) {
   if (n < journey.size()) {
@@ -92,8 +99,6 @@ void requestSync() {
     return;
   }  
 
-
-
   if (!animationGradualColor) {
     // We clear our map before tallying again, if doing instant fill-in
     clearHeatmap();
@@ -112,13 +117,9 @@ void requestSync() {
     }
   } else {
     // We fill in only new, initial countries if doing gradual fill-in
-    JSONArray journey;
-    for (int i = journeyIndices.size(); i < journeys.size(); ++i) {
-      journey = journeys.getJSONArray(i);
-      tallyTravel(journey, 0);
-    }
+    tallyFirst(journeys);
     // We must consider the case where we had an empty dataset (1 empty journey) and get new data
-    journey = journeys.getJSONArray(0);
+    JSONArray journey = journeys.getJSONArray(0);
     if (getTally(journey, 0) == 0) {
       tallyTravel(journey, 0);
     }
@@ -198,6 +199,37 @@ PVector countryCoord(JSONArray journey, int index) {
   } 
   catch (Exception e) {
     return new PVector();
+  }
+}
+
+// Tallies first elements so they show up in the map
+void tallyFirst(JSONArray j) {
+  JSONArray journey;
+  for (int i = journeyIndices.size(); i < j.size(); ++i) {
+    journey = j.getJSONArray(i);
+    tallyTravel(journey, 0);
+  }
+}
+
+// Same but only some of them (0 < n < m <= j.size())
+void tallyFirst(JSONArray j, int n, int m) {
+  int num = m;
+  if (num < 1 || num > j.size()) {
+    num = j.size();
+  }
+  JSONArray journey;
+  for (int i = n; i < num; ++i) {
+    journey = j.getJSONArray(i);
+    tallyTravel(journey, 0);
+  }
+}
+
+// Gets number of journeys (if normal mode) or current panicStep (if panic mode)
+int getNumJourneys() {
+  if (panic) {
+    return panicStep + 1;
+  } else {
+    return journeyIndices.size();
   }
 }
 

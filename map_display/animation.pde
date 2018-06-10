@@ -45,8 +45,12 @@ void animationTick() {
     if (journeyData == null || journeyData.getJSONArray(0).size() == 0) {
       return;
     }
+    
+    // We tick all things if running normally
+    // We tick only until panicStep if in panic mode
+    int end = getNumJourneys();
 
-    for (int i = 0; i < journeyIndices.size(); ++i) {
+    for (int i = 0; i < end; ++i) {
       journeyIndices.increment(i);
       if (animationGradualColor) {
         int index = journeyIndices.get(i);
@@ -71,7 +75,7 @@ void animateJourneys() {
   float t = (float)(millis() % animationPathTime) / (float)animationPathTime;
 
   // Iterate over our data
-  for (int i = 0; i < journeyData.size(); ++i) {
+  for (int i = 0; i < getNumJourneys(); ++i) {
     float localT = t;
     // Let's look at our journey
     JSONArray journey = journeyData.getJSONArray(i);

@@ -27,6 +27,10 @@ void oscEvent(OscMessage message) {
     }
     break;
     // [void]
+  case "/step":
+    stepPanic();
+    break;
+    // [void]
   case "/clear":
     requestClear();
     break;
