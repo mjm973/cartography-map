@@ -137,7 +137,7 @@ const addCountryEvents = (country, tag, flag) => {
 
     // Show country tag but only if we are single touching
     if (e.touches.length === 1) {
-     e.preventDefault();
+     // e.preventDefault();
 
       let touch = e.touches[0];
       tag.style.left = `${touch.clientX - 150}px`;
