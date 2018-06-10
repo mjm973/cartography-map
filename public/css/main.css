@@ -40,11 +40,14 @@ svg {
 div.tag-bg {
   fill: black;
   /* width: 150px; */
-  height: 3em;
-  width: 10em;
   padding: 3px;
   alignment-baseline: middle;
-  font-size: 2em;
+
+  height: 2.5em;
+  width: 10em;
+  font-size: 1.5em;
+
+  text-align: center;
 
   background-color: black;
   display: flex;
@@ -112,7 +115,7 @@ div.tag-bg {
 }
 
 .scroll {
-  overflow: scroll;
+  /* overflow: scroll; */
 }
 
 #map-container {
@@ -188,18 +191,24 @@ div.tag-bg {
     width: 100vw;
   }
 
+  div.tag-bg {
+    height: 3em;
+    width: 10em;
+    font-size: 2em;
+  }
+
   .flag {
     max-height: 1.7em;
   }
 
   #map-container {
-    height: 40vh;
+    height: 50vh;
     width: 100%;
     margin: 0;
   }
 
   #list-container {
-    height: 60vh;
+    height: 50vh;
     width: 100%;
     top: auto;
     bottom: 0;

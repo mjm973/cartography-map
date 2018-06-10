@@ -329,7 +329,7 @@ let w = 0, h = 0;
 
 const resetView = () => {
   mapScale = 1;
-  scaleBuffer = 0;
+  scaleBuffer = 1;
   xPos = 0;
   xBuf = 0;
   yPos = 0;
@@ -358,7 +358,13 @@ const clearTags = () => {
   })
 }
 
+// Phones phones phones
+const isLandscape = () => {
+  return window.innerWidth > window.innerHeight
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  console.log(isLandscape())
   loadData(tagCountries);
 
   let map = document.getElementById('map-container')
@@ -426,11 +432,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // MATH SORCERY I ONLY HALF UNDERSTAND
       let upperX = w*(scaleBuffer-1)/2;
+      let lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
       let upperY = h*(scaleBuffer-1)/(2);
       let lowerY = -upperY;
 
-      if (xBuf < 0) {
-        xBuf = 0;
+      if (xBuf < lowerX) {
+        xBuf = lowerX;
       } else if (xBuf > upperX) {
         xBuf = upperX;
       }
@@ -451,11 +458,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // MATH SORCERY I ONLY HALF UNDERSTAND
       let upperX = w*(scaleBuffer-1)/2;
+      let lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
       let upperY = h*(scaleBuffer-1)/(2);
       let lowerY = -upperY;
 
-      if (xBuf < 0) {
-        xBuf = 0;
+      if (xBuf < lowerX) {
+        xBuf = lowerX;
       } else if (xBuf > upperX) {
         xBuf = upperX;
       }
