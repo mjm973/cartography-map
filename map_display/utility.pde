@@ -66,7 +66,7 @@ void requestClear() {
     return;
   }
 
-  GetRequest req = new GetRequest("http://localhost:4242/api/clear");
+  GetRequest req = new GetRequest(String.format("http://localhost:%d/api/clear", port));
 
   try {
     req.send();
@@ -85,7 +85,7 @@ void requestSync() {
     return;
   }
 
-  GetRequest req = new GetRequest("http://localhost:4242/api/sync");
+  GetRequest req = new GetRequest(String.format("http://localhost:%d/api/sync", port));
   req.addHeader("Accept", "application/json");
 
   // Make sure we abort on failure
@@ -152,7 +152,7 @@ void requestUpdate(JSONArray json) {
   else {
     int count = json.size();
     // Post our current count
-    PostRequest post = new PostRequest("http://localhost:4242/api/update");
+    PostRequest post = new PostRequest(String.format("http://localhost:%d/api/update", port));
     post.addData("count", String.valueOf(count));
     post.send();
 

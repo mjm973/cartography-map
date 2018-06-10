@@ -15,6 +15,8 @@ JSONArray override = null; // Override data for panic situation
 boolean enablePanic = true; // Allows enabling panic if override data is available.
 int panicStep = 0; // Used to step through override journeys sequentially
 
+int port = 80;
+
 IntList journeyIndices; // To keep track where we are in each journey
 
 float scaleFactor; // Caching the math to rescale our svg
