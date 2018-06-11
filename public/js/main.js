@@ -254,8 +254,8 @@ const postJourney = () => {
       lat: country.dataset.lat
     }
   });
-  // Abort if data is empty!
-  if (cleanJourney.length === 0) {
+  // ONE COUNTRY IS NOT A JOURNEY GUYS!
+  if (cleanJourney.length < 2) {
     return;
   }
   // POST data to the server
