@@ -363,6 +363,36 @@ const isLandscape = () => {
   return window.innerWidth > window.innerHeight
 }
 
+// Generate a large JSON file to test the display app
+const downloadTest = (n, m = 9) => {
+  let numJourneys = n;
+  let numCountries =  m <= 9 ? (m > 1 ? m : 3) : 9;
+
+  let countries = document.getElementsByTagName('path')
+  countries = Array.from(countries)
+  let result = []
+  for (let i = 0; i < numJourneys; ++i) {
+    let journey = []
+    for (let j = 0; j < numCountries; ++j) {
+      let country = countries[Math.floor(Math.random()*countries.length)]
+      let entry = {
+        name: country.id,
+        lon: country.dataset.lon,
+        lat: country.dataset.lat
+      }
+      journey.push(entry)
+    }
+    result.push(journey)
+  }
+
+  let data = JSON.stringify(result)
+  let dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(data)}`
+  let elem = document.getElementById('download')
+  elem.setAttribute('href', dataStr)
+  elem.setAttribute('download', 'test.json')
+  elem.click()
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   console.log(isLandscape())
   loadData(tagCountries);
@@ -374,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
   w = map.clientWidth;
   h = map.clientHeight;
 
-  // Detect oreintation change to keep scroll magic working
+  // Detect orientation change to keep scroll magic working
   window.addEventListener('orientationchange', (e) => {
     w = map.clientWidth;
     h = map.clientHeight;

@@ -3,7 +3,7 @@ html
   head 
     meta(lang="en" dir="ltr")
     title Cartography
-    link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway|Sunflower:300|Titillium+Web")
+    //- link(rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway|Sunflower:300|Titillium+Web")
     link(rel="stylesheet" href="/static/css/main.css")
   
   body
@@ -19,5 +19,6 @@ html
         div(class="container")
           button(id="undo" onclick="popCountry()") UNDO
           button(id="reset" onclick="resetView()") RESET
+        a(id="download" style="display:none")
 
     script(src="/static/js/main.js") 

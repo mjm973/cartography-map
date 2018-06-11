@@ -234,5 +234,18 @@ void oscEvent(OscMessage message) {
       }
     }
     break;
+    // [int] -> animationMaxJourneys
+  case "/animation/maxJourneys":
+    if (message.checkTypetag("i")) {
+      animationMaxJourneys = message.get(0).intValue();
+      if (animationMaxJourneys < 1) {
+        animationMaxJourneys = 1;
+      }
+
+      if (debug) {
+        println(String.format("animationMaxJourneys set to [%d]", animationMaxJourneys));
+      }
+    }
+    break;
   }
 }

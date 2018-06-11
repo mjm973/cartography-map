@@ -14,6 +14,8 @@ The client side shows an map of the world rendered as an SVG image. Users can us
 
 The journey is displayed in a list next to the map. There are also three buttons: `UNDO`, which clears the last element in the list, `RESET`, which resets the map view to its normal values, and `SUBMIT`, which sends the journey data to the server. Users can also tap on a particular list element to remove it from their journey.
 
+The client also exposes a function in the developer console to generate test datasets for the Display App. Calling `downloadTest` will make the browser download a JSON dataset. It takes two parameters: the first determines the number of journeys in the dataset, while the second defaults to 9 and determines the number of countries in each journey.
+
 ### Server
 
 The server handles requests from the audience clients, and keeps track of the journeys they input. It keeps a `journeys` array with the master log of all journeys.
@@ -58,6 +60,7 @@ Here are the global parameters:
 | `animationGradualColor`   | `boolean`           | Do we color countries as we visit them (in "real-time")?                                |
 | `animationColorStep`      | `float`             | Rate at which we fade between country colors                                            |
 | `animationColorThreshold` | `int`               | How many visits correspond to a change in color?                                        |
+| `animationMaxJourneys`    | `int`               | How many journeys should we display at one time?                                        |
 | `debug`                   | `boolean`           | Enable debug logs for OSC callibration?                                                 |
 | `syncTime`                | `float`             | Approximate time in seconds between sync requests to server                             |
 | `scaleY`                  | `float`             | Scales the map vertically                                                               |
@@ -84,6 +87,7 @@ The following global parameters are exposed via OSC:
 | `animationRadiusFactor`   | `/animation/radiusFactor`   | `float`             | `>= 1`       |
 | `animationColorStep`      | `/animation/colorStep`      | `float`             | `0..1`       |
 | `animationColorThreshold` | `/animation/colorThreshold` | `int`               | `>= 1`       |
+| `animationMaxJourneys`    | `/animation/maxJourneys`    | `int`               | `> 0`        |
 | `debug`                   | `/debug`                    | `int`               | `0..1`       |
 | `requestClear()` **       | `/clear`                    | `(none)`            | `N/A`        |
 | `syncTime`                | `/syncTime`                 | `float`             | `>= 1`       |

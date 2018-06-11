@@ -75,7 +75,7 @@ void animateJourneys() {
   float t = (float)(millis() % animationPathTime) / (float)animationPathTime;
 
   // Iterate over our data
-  for (int i = 0; i < getNumJourneys(); ++i) {
+  for (int i = getMinJourney(); i < getNumJourneys(); ++i) {
     float localT = t;
     // Let's look at our journey
     JSONArray journey = journeyData.getJSONArray(i);

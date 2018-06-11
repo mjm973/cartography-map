@@ -39,6 +39,7 @@ color mapColor(float count) {
 void stepPanic() {
   if (panic) {
     panicStep = constrain(panicStep + 1, 0, override.size()-1);
+    println(String.format("Panic drawing %d journeys", panicStep));
   }
 }
 
@@ -222,6 +223,13 @@ void tallyFirst(JSONArray j, int n, int m) {
     journey = j.getJSONArray(i);
     tallyTravel(journey, 0);
   }
+}
+
+// Gets lower bound for journeys to draw
+int getMinJourney() {
+  int top = getNumJourneys();
+  int min = top - animationMaxJourneys;
+  return min > 0 ? min : 0;
 }
 
 // Gets number of journeys (if normal mode) or current panicStep (if panic mode)

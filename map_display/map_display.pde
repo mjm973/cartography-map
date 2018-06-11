@@ -67,6 +67,7 @@ float animationRadiusFactor = 1.5; // Bigger factor => shallower arcs
 boolean animationGradualColor = true; // Do we fill in the countries gradually as we travel?
 float animationColorStep = 0.05; // How fast we fade between country colors?
 int animationColorThreshold = 1; // How many visits correspond to a change in color?
+int animationMaxJourneys = 100; // How many journeys to display at a time?
 
 // = CALIBRATION =
 boolean debug = false; // Controls print statements for callibration and debug
