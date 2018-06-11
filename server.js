@@ -18,7 +18,7 @@ let journeys = [];
 // ==== USER ROUTES ====
 // Base route: serves the map to the users
 app.get('/', (cReq, cRes) => {
-  cRes.render('index');
+  cRes.render('index', {test: 0});
 });
 
 // ==== API ROUTES ====
@@ -67,6 +67,12 @@ app.get('/api/clear', (cReq, cRes) => {
   console.log('Journeys cleared.')
   cRes.redirect('/')
 });
+
+// API test route: use this to test the server against crazy conditions
+// Serves the usual map client, BUT as a version that spams the server
+app.get('/api/test', (cReq, cRes) => {
+  cRes.render('index', {test: 1});
+})
 
 // Catch-all: redirects any other requests to the base route
 app.get('/*', (cReq, cRes) => {

@@ -14,7 +14,12 @@ The client side shows an map of the world rendered as an SVG image. Users can us
 
 The journey is displayed in a list next to the map. There are also three buttons: `UNDO`, which clears the last element in the list, `RESET`, which resets the map view to its normal values, and `SUBMIT`, which sends the journey data to the server. Users can also tap on a particular list element to remove it from their journey.
 
-The client also exposes a function in the developer console to generate test datasets for the Display App. Calling `downloadTest` will make the browser download a JSON dataset. It takes two parameters: the first determines the number of journeys in the dataset, while the second defaults to 9 and determines the number of countries in each journey.
+The client also exposes a couple functions in the developer console to test the setup:
+
+| Function             | Parameters         | Use                                                           |
+|:--------------------:|:------------------:|---------------------------------------------------------------|
+| `downloadTest(a, b)` | `number`, `number` | Downloads a dataset with `a` journeys with `b` countries each |
+| `testHell(n)`        | `number`           | Takes the current selected journey, and POSTs it `n` times    |
 
 ### Server
 
@@ -30,6 +35,7 @@ Currently, the server supports the following routes:
 | `'/api/update'`   | `POST` | Used by the Display App to retrieve only new journey data (in progress)                               |
 | `'/api/download'` | `GET`  | Downloads the current `journeys` array as JSON. Use it to generate override files for the display app |
 | `'/api/clear'`    | `GET`  | Allows clearing the `journeys` array if needed, and redirects to `'/'`                                |
+| `'/api/test'`     | `GET`  | Shows a version of the client that sends 50 journeys in a burst, for testing purposes                 |
 | `'/*'`            | `GET`  | Catch-all, redirects any other request to `'/'`                                                       |
 
 ### Display Application

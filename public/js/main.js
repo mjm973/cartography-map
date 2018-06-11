@@ -237,6 +237,11 @@ const tagCountries = (data) => {
 
 // POSTs the journey data to the server to be recorded and displayed
 const postJourney = () => {
+  // ARE WE TESTING A HELL CLIENT??????
+  let testElem = document.getElementById('test')
+  let isTest = testElem.dataset.test === '1'
+  console.log(isTest)
+
   // Remove leftover null elements from our journey
   let cleanJourney = journey.filter((entry) => {
     return entry !== null;
@@ -255,22 +260,75 @@ const postJourney = () => {
   }
   // POST data to the server
   let data = JSON.stringify(cleanJourney);
-  fetch('/api/submit', {
-    body: data,
-    headers: {
-      'content-type': 'application/json'
-    },
-    method: 'POST'
-  }).then((res) => {
-    // Make sure our submission made it through
-    if (res.ok) {
-      // Clear our journey once we are done
-      while (journey.length > 0) {
-        // We use popCountry to ensure the list and map get cleared as well
-        popCountry();
+  let numTimes = isTest ? 50 : 1;
+  let postRequest = () => {
+    console.log('sending...')
+    fetch('/api/submit', {
+      body: data,
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST'
+    }).then((res) => {
+      // Make sure our submission made it through
+      if (res.ok) {
+        // Clear our journey once we are done
+        while (journey.length > 0) {
+          // We use popCountry to ensure the list and map get cleared as well
+          popCountry();
+        }
       }
+    })
+  }
+
+  for (let i = 0; i < numTimes; ++i) {
+    postRequest()
+  }
+}
+
+// To test hell clients from the console
+const testHell = (n) => {
+  // Remove leftover null elements from our journey
+  let cleanJourney = journey.filter((entry) => {
+    return entry !== null;
+  }).map((entry) => {
+    let country = document.getElementById(entry);
+    let coord = earthToSvg(country.dataset.lon, country.dataset.lat);
+    return {
+      name: entry,
+      lon: country.dataset.lon,
+      lat: country.dataset.lat
     }
-  })
+  });
+  // Abort if data is empty!
+  if (cleanJourney.length === 0) {
+    return;
+  }
+  // POST data to the server
+  let data = JSON.stringify(cleanJourney);
+  let postRequest = () => {
+    console.log('sending...')
+    fetch('/api/submit', {
+      body: data,
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST'
+    }).then((res) => {
+      // Make sure our submission made it through
+      if (res.ok) {
+        // Clear our journey once we are done
+        while (journey.length > 0) {
+          // We use popCountry to ensure the list and map get cleared as well
+          popCountry();
+        }
+      }
+    })
+  }
+
+  for (let i = 0; i < n; ++i) {
+    postRequest()
+  }
 }
 
 const getPinch = (e) => {
