@@ -134,6 +134,11 @@ void keyPressed() {
         journeyIndices.clear();
         journeyIndices.resize(override.size());
         tallyFirst(override, 0, 1);
+      } else {
+        clearHeatmap();
+        journeyIndices.clear();
+        journeyIndices.resize(journeys.size());
+        tallyFirst(journeys, 0, 1);
       }
     }
     break;
