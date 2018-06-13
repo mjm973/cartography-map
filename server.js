@@ -32,14 +32,12 @@ app.post('/api/submit', (cReq, cRes) => {
 
 // API sync route: used by the display app to retrieve the full journey data
 app.get('/api/sync', (cReq, cRes) => {
-  console.log("Sync request received!")
   // Display App expects a 2D array, so we send a nested empy array if journeys is empty
   cRes.json(journeys.length === 0 ? [[]] : journeys)
 })
 
 // API update route: used by the display app to retrieved new journey data
 app.post('/api/update', (cRes, cReq) => {
-  console.log('Update request received!')
   // App should tell us when it last updated
   let count = cReq.body.count
   if (count !== undefined) {

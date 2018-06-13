@@ -1,6 +1,7 @@
 var tap = null; // To determine whether we have a single or double tap
 var journey = []; // Keeps track of the countries selected to be sent to the server
 var yScale = 1.4125;
+var pz; // Handles panning and zooming (thanks js libraries)
 
 // Checks if we have less than the maximum number of countries
 function tooManyCountries() {
@@ -374,36 +375,70 @@ function getSlideDelta(e)  {
   };
 }
 
-var touchBuffer = [];
-var mapScale = 1;
-var scaleBuffer;
-var pinchCenter= {
-  x: 1, y: 1,
-  xp: 0, yp: 0
-}
-var xPos = 0, yPos = 0;
-var xBuf = 0, yBuf = 0;
+// var touchBuffer = [];
+// var mapScale = 1;
+// var scaleBuffer;
+// var pinchCenter= {
+//   x: 1, y: 1,
+//   xp: 0, yp: 0
+// }
+// var xPos = 0, yPos = 0;
+// var xBuf = 0, yBuf = 0;
 var w = 0, h = 0;
 
 function resetView() {
-  mapScale = 1;
-  scaleBuffer = 1;
-  xPos = 0;
-  xBuf = 0;
-  yPos = 0;
-  yBuf = 0;
+  // mapScale = 1;
+  // scaleBuffer = 1;
+  // xPos = 0;
+  // xBuf = 0;
+  // yPos = 0;
+  // yBuf = 0;
+  //
+  // var map = document.getElementById('map-container');
+  // map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+  var t = pz.getTransform();
 
-  var map = document.getElementById('map-container');
-  map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+  pz.zoomAbs(0, 0, 1);
+  boundMap(pz);
+  scaleStrokes(pz);
 }
 
-function scaleStrokes(scale)  {
+// Use pinchzoom's data to scale SVG strokes
+function scaleStrokes(pz)  {
   var countries = document.getElementsByTagName('path');
   var countryList = Array.from(countries);
+
+  var scale = pz.getTransform().scale;
 
   countryList.forEach(function(country)  {
     country.style.strokeWidth = 1/scale;
   });
+}
+
+// Use pinchzoom's data to keep map in bounds
+function boundMap(pz) {
+  var map = document.getElementById('map-container');
+  var t = pz.getTransform();
+  var maxX = 0;
+  var maxY = 0;
+  var minX = w - map.clientWidth*t.scale;
+  var minY = h - map.clientHeight*t.scale;
+
+  console.log(t);
+
+  if (t.x < minX) {
+    pz.moveTo(minX, t.y);
+    // pz.getTransform().x = minX;
+  } else if (t.x > maxX) {
+    pz.moveTo(maxX, t.y);
+    // pz.getTransform().x = maxX;
+  }
+
+  if (t.y < minY) {
+    pz.moveTo(t.x, minY);
+  } else if (t.y > maxY) {
+    pz.moveTo(t.x, maxY);
+  }
 }
 
 // Because events are weird so let's brute force this thing
@@ -456,11 +491,30 @@ document.addEventListener('DOMContentLoaded', function()  {
   loadData(tagCountries);
 
   var map = document.getElementById('map-container');
+  w = map.clientWidth;
+  h = map.clientHeight;
+  var svgGroup = document.getElementById('ne_countries');
+  pz = panzoom(map, {
+    minZoom: 1,
+    maxZoom: 20,
+    zoomDoubleClickSpeed: 1,
+    smoothScroll: false,
+    zoomSpeed: 0.1,
+    bounds: {
+      left: 0,
+      right: w,
+      top: 0,
+      bottom: h
+    },
+    onTouch: function(e) {
+      return false;
+    }
+  });
+
+  console.log(pz.getTransform());
 
   var svg = map.firstChild;
 
-  w = map.clientWidth;
-  h = map.clientHeight;
 
   // Detect orientation change to keep scroll magic working
   window.addEventListener('orientationchange', function(e)  {
@@ -476,94 +530,102 @@ document.addEventListener('DOMContentLoaded', function()  {
     }
   });
 
-  map.addEventListener('touchstart', function(e)  {
-    touchBuffer = [];
-    for (var i = 0; i < e.touches.length; ++i) {
-      touchBuffer.push(e.touches[i]);
-    }
-
-    // var t = e.touches[0];
-    // console.log(`(${t.clientX}, ${t.clientY})`)
-    if (e.touches.length === 2) {
-      var pinch = getPinch(e);
-      pinchCenter = {
-        x: pinch.x,
-        y: pinch.y
-      };
-    }
-  });
+  // map.addEventListener('touchstart', function(e)  {
+  //   touchBuffer = [];
+  //   for (var i = 0; i < e.touches.length; ++i) {
+  //     touchBuffer.push(e.touches[i]);
+  //   }
+  //
+  //   // var t = e.touches[0];
+  //   // console.log(`(${t.clientX}, ${t.clientY})`)
+  //   if (e.touches.length === 2) {
+  //     var pinch = getPinch(e);
+  //     pinchCenter = {
+  //       x: pinch.x,
+  //       y: pinch.y
+  //     };
+  //   }
+  // });
   map.addEventListener('touchend', function(e)  {
-    mapScale = scaleBuffer;
+    // mapScale = scaleBuffer;
     if (e.touches.length === 0) {
       clearTags();
-      xPos = xBuf;
-      yPos = yBuf;
-      touchBuffer = [];
+      // xPos = xBuf;
+      // yPos = yBuf;
+      // touchBuffer = [];
     }
   });
-  map.addEventListener('touchmove', function(e)  {
-    if (e.touches.length >= 2) {
-      var pinch = getPinch(e);
-      var scale = pinch.scale;
-      scaleBuffer = mapScale*scale;
-
-      scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
-
-      var dx = pinch.x - pinchCenter.x;
-      var dy = pinch.y - pinchCenter.y;
-
-      xBuf = xPos + dx;
-      yBuf = yPos + dy;
-
-      // xBuf = xPos-pinchCenter.x
-      // yBuf = (pinch.y)*(scaleBuffer-1)/2;
-
-      // MATH SORCERY I ONLY HALF UNDERSTAND
-      var upperX = w*(scaleBuffer-1)/2;
-      var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
-      var upperY = h*(scaleBuffer-1)/(2);
-      var lowerY = -upperY;
-
-      if (xBuf < lowerX) {
-        xBuf = lowerX;
-      } else if (xBuf > upperX) {
-        xBuf = upperX;
-      }
-
-      // Y is different because map is centered vertically I think?
-      if (yBuf < lowerY) {
-        yBuf = 0 - h*(scaleBuffer-1)/(2);
-      } else if (yBuf > upperY) {
-        yBuf = upperY;
-      }
-
-      scaleStrokes(scaleBuffer);
-    } else {
-      var delta = getSlideDelta(e);
-
-      xBuf = xPos + delta.x;
-      yBuf = yPos + delta.y;
-
-      // MATH SORCERY I ONLY HALF UNDERSTAND
-      var upperX = w*(scaleBuffer-1)/2;
-      var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
-      var upperY = h*(scaleBuffer-1)/(2);
-      var lowerY = -upperY;
-
-      if (xBuf < lowerX) {
-        xBuf = lowerX;
-      } else if (xBuf > upperX) {
-        xBuf = upperX;
-      }
-
-      // Y is different because map is centered vertically I think?
-      if (yBuf < lowerY) {
-        yBuf = 0 - h*(scaleBuffer-1)/(2);
-      } else if (yBuf > upperY) {
-        yBuf = upperY;
-      }
+  map.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      scaleStrokes(pz);
     }
-    map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
-
+    boundMap(pz);
+    // console.log(pz.getTransform());
   });
+  // map.addEventListener('touchmove', function(e)  {
+  //   if (e.touches.length >= 2) {
+  //     var pinch = getPinch(e);
+  //     var scale = pinch.scale;
+  //     scaleBuffer = mapScale*scale;
+  //
+  //     scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
+  //
+  //     var dx = pinch.x - pinchCenter.x;
+  //     var dy = pinch.y - pinchCenter.y;
+  //
+  //     xBuf = xPos + dx;
+  //     yBuf = yPos + dy;
+  //
+  //     // xBuf = xPos-pinchCenter.x
+  //     // yBuf = (pinch.y)*(scaleBuffer-1)/2;
+  //
+  //     // MATH SORCERY I ONLY HALF UNDERSTAND
+  //     var upperX = w*(scaleBuffer-1)/2;
+  //     var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
+  //     var upperY = h*(scaleBuffer-1)/(2);
+  //     var lowerY = -upperY;
+  //
+  //     if (xBuf < lowerX) {
+  //       xBuf = lowerX;
+  //     } else if (xBuf > upperX) {
+  //       xBuf = upperX;
+  //     }
+  //
+  //     // Y is different because map is centered vertically I think?
+  //     if (yBuf < lowerY) {
+  //       yBuf = 0 - h*(scaleBuffer-1)/(2);
+  //     } else if (yBuf > upperY) {
+  //       yBuf = upperY;
+  //     }
+  //
+  //     scaleStrokes(scaleBuffer);
+  //   } else {
+  //     var delta = getSlideDelta(e);
+  //
+  //     xBuf = xPos + delta.x;
+  //     yBuf = yPos + delta.y;
+  //
+  //     // MATH SORCERY I ONLY HALF UNDERSTAND
+  //     var upperX = w*(scaleBuffer-1)/2;
+  //     var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
+  //     var upperY = h*(scaleBuffer-1)/(2);
+  //     var lowerY = -upperY;
+  //
+  //     if (xBuf < lowerX) {
+  //       xBuf = lowerX;
+  //     } else if (xBuf > upperX) {
+  //       xBuf = upperX;
+  //     }
+  //
+  //     // Y is different because map is centered vertically I think?
+  //     if (yBuf < lowerY) {
+  //       yBuf = 0 - h*(scaleBuffer-1)/(2);
+  //     } else if (yBuf > upperY) {
+  //       yBuf = upperY;
+  //     }
+  //   }
+  //   map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
+  //
+  // });
 });

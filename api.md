@@ -1,10 +1,76 @@
-## Cartography Map API
+# Cartography Map API
 
 The map application consists in three components:
 
 - A client side map: this is where users input their journeys and submit them
 - A Node-Express server: it serves the map website, recieves and stores journey data from users, and relays this data to the display app
 - A display application (built using Processing 3.3.7): it receives data from the server, displays it on a map, and communicates via Syphon with Isadora to project the map.
+
+## Setup
+
+### Server + Client
+
+To get the Map applications on your computer, download this repository or clone it from the command line:
+
+```bash
+$ git clone https://github.com/mjm973/cartography-map.git
+```
+
+Then, make sure Node is installed on the computer running the map. If not, install node from their [website](https://nodejs.org), or using Homebrew from the terminal:
+
+```bash
+$ brew install node
+```
+
+Next, navigate to repository's folder in the command line to install the Node dependencies. Once you are there, run
+
+```bash
+$ npm install
+```
+
+This should install everything needed to run the server. With that ready, you can run the server with
+
+```bash
+$ node server.js
+```
+
+Opening a browser and navigating to `http://localhost` should now display the Map Client!
+
+### Display Application
+
+Ideally, you should have an exacutable version of the Display App that you can just run and launch anytime. If for whatever reason (tweaking variables, further revision, the executable lived in a USB Drive which got lost) you need to re-build it or launch it from Processing, keep reading. Else, you can skip to *Api Use*.
+
+Okay, so we need to re-build or run in Processing. Open the main file in Processing (`map_display.pde`). This should also open all other relevant files in different tabs. Yay!
+
+First things first, we need to make sure Syphon is enabled (otherwise, we can't send the image data to Isadora). Find the following lines of code and make sure they are uncommented (i.e. they don't start with `//`):
+
+```java
+// In map_display.pde: Lines 7 and 110
+
+...
+SyphonServer server; // Uncomment on Mac to enable Syphon
+...
+server.sendScreen(); // Uncomment on Mac to enable Syphon
+...
+
+// In setupHandlers.pde: Line 52
+
+...
+server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
+...
+```
+
+Then, you might want to run the App in fullscreen mode (the app and Isadora patch is callibrated for fullscreen). To do so, edit the following two lines in `map_display.pde`:
+
+```java
+// map_display.pde: Lines 83 and 84
+//size(1200, 600, P2D); // Uncomment for windowed/debug
+fullScreen(P2D); // Uncomment for fullscreen
+```
+
+Finally, run it or build it! To run, press the run button! To build an executable, the dropdown menu should have an `Export Application...` option that should do the trick.
+
+## API Use
 
 Below is documentation on the interfaces available for each of the components.
 
