@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Welcome to Cartography!</title>
+		<meta name-"viewport" content="width=device-width" />
+		<style type="text/css">
+		html, body {
+			height: 100%;
+			width: 100%;
+			font-size: 3vh;
+			font-family: sans-serif;
+			margin: 0;
+
+			background-color: #dcbf35;
+		}
+		.container {
+			display: flex;
+			/* padding: 20px; */
+			width: 100%;
+			height: 100%;
+		}
+		.container>* {
+			padding: 0 5vw;
+		}
+		.container form {
+			margin: 1em 0;
+		}
+		.center {
+			justify-content: center;
+			align-content: space-between;
+			align-items: center;
+			text-align: center;
+		}
+		.vertical {
+			flex-direction: column;
+		}
+		#but {
+			/* font-size: 40; */
+			font-size: 1.5em;
+			padding: 0.35em;
+			border-radius: 2vmin;
+			background-color: #05943c;
+		}
+		#main {
+			/* padding: 20px; */
+			width: 100%;
+			height: 100%;
+		}
+		</style>
+	</head>
+	<body>
+		<div id="main">
+			<div class="container center vertical">
+				<h1>4Welcome to $GatewayName!</h1>
+
+				<p>Press the GO TO MAP button to continue. If you need to reopen the map, go to your browser window and go to map.com</p>
+
+				<form name="login" method="post" action="http://192.168.2.1:5280/">
+					<input type="hidden" name="accept_terms" value="yes" />
+					<input type="hidden" name="redirect" value="$redirect">
+					<input type="hidden" name="mode_login">
+					<input type="submit" id="but" value="GO TO MAP">
+				</form>
+
+			</div>
+		</div>
+	</body>
+</html>

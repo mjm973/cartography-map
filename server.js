@@ -74,6 +74,12 @@ app.get('/api/test', (cReq, cRes) => {
   cRes.render('index', {test: 1});
 })
 
+// API splash route: serves the captive portal's splash page
+app.get('/api/splash', (cReq, cRes) => {
+  console.log('SPLASH')
+  cRes.sendFile(__dirname + '/views/splash.html')
+})
+
 // Catch-all: redirects any other requests to the base route
 app.get('/*', (cReq, cRes) => {
   cRes.redirect('/');

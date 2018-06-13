@@ -1,30 +1,30 @@
-var tap = null; // To determine whether we have a single or double tap
-var journey = []; // Keeps track of the countries selected to be sent to the server
-var yScale = 1.4125;
+let tap = null; // To determine whether we have a single or double tap
+let journey = []; // Keeps track of the countries selected to be sent to the server
+const yScale = 1.4125;
 
 // Checks if we have less than the maximum number of countries
-function tooManyCountries() {
-  var realList = journey.filter(function(c) {
-    return !(c === null);
+const tooManyCountries = () => {
+  let realList = journey.filter((c) => {
+    return !(c === null)
   })
 
-  return !(realList.length < 9);
+  return !(realList.length < 9)
 }
 
 // Returns the last country, skipping null entries
-function lastCountry() {
-  var realList = journey.filter(function(c) {
-    return !(c === null);
+const lastCountry = () => {
+  let realList = journey.filter((c) => {
+    return !(c === null)
   })
 
-  return realList[realList.length-1];
+  return realList[realList.length-1]
 }
 
 // Helper to add a country to the journey array and list
-function addCountry(c, flag) {
+const addCountry = (c, flag) => {
   // Make sure we don't add too many countries
   if (tooManyCountries()) {
-    return;
+    return
   }
 
   // Style the country
@@ -35,26 +35,26 @@ function addCountry(c, flag) {
     journey.push(c.id);
 
     // Find list
-    var countryList = document.getElementById('country-list');
+    let countryList = document.getElementById('country-list');
     // Create new item
-    var item = document.createElement('li');
-    var cont = document.createElement('div');
+    let item = document.createElement('li');
+    let cont = document.createElement('div');
     item.appendChild(cont);
-    var t = document.createTextNode(c.id);
+    let t = document.createTextNode(c.id);
     cont.appendChild(t);
 
     // Append flag if there is one
     if (flag) {
-      var flagEl = document.createElement('img');
+      let flagEl = document.createElement('img');
       flagEl.classList.add('flag');
-      flagEl.src = `/static/img/flags/${flag}`;
+      flagEl.src = `/static/img/flags/${flag}`
       cont.appendChild(flagEl);
     }
 
     // Give item an index
     item.dataset.i = journey.length-1;
     // Event listener to allow for removal
-    item.addEventListener('click', function(e)   {
+    item.addEventListener('click', (e) => {
       e.preventDefault();
       remCountry(item, item.dataset.i);
     })
@@ -65,64 +65,64 @@ function addCountry(c, flag) {
 }
 
 // Helper to undo last country added
-function popCountry()   {
-  var country = journey.pop();
+const popCountry = () => {
+  let country = journey.pop();
   if (!journey.includes(country) && country !== null) {
     document.getElementById(country).classList.remove('selected');
   }
 
-  var countryList = document.getElementById('country-list');
+  let countryList = document.getElementById('country-list');
   countryList.removeChild(countryList.lastChild);
 }
 
 // Helper to remove specific countries from journey
-function remCountry(elt, i)   {
-  var country = elt.textContent;
+const remCountry = (elt, i) => {
+  let country = elt.textContent;
   journey[i] = null;
   if (!journey.includes(country)) {
     document.getElementById(country).classList.remove('selected');
   }
 
-  var countryList = document.getElementById('country-list');
+  let countryList = document.getElementById('country-list');
   countryList.removeChild(elt);
 }
 
 // Loads country + flag data from our JSON file
-function loadData(cb)  {
+const loadData = (cb) => {
   fetch('/static/countries.json')
-    .then(function(res)  {
+    .then((res) => {
       return res.json();
     })
-    .then(function(data)  {
+    .then((data) => {
       cb(data);
     })
 }
 
 // Binds mouse and touch events to country regions. Passes flag data through for the country list.
-function addCountryEvents(country, tag, flag)  {
+const addCountryEvents = (country, tag, flag) => {
   // // === Desktop/debug events ===
-  // // 'click' < double tap
-  // country.addEventListener('click', (e)  {
+  // // 'click' <=> double tap
+  // country.addEventListener('click', (e) => {
   //   console.log(country.id);
   //   addCountry(country, flag);
   // });
-  // // 'mouseenter' < 'touchstart'
-  // country.addEventListener('mouseenter', (e)  {
+  // // 'mouseenter' <=> 'touchstart'
+  // country.addEventListener('mouseenter', (e) => {
   //   tag.style.left = `${e.clientX}px`;
   //   tag.style.top = `${e.clientY}px`;
   //   tag.classList.remove('hidden');
   // });
-  // // 'mouseleave' < 'touchend'
-  // country.addEventListener('mouseleave', (e)  {
+  // // 'mouseleave' <=> 'touchend'
+  // country.addEventListener('mouseleave', (e) => {
   //   tag.classList.add('hidden');
   // });
 
   // === Mobile/final events ===
   // 'touchstart' handles single touch (show tag) and double tap (select country)
-  country.addEventListener('touchstart', function(e)  {
+  country.addEventListener('touchstart', (e) => {
     // If we haven't tapped recently or we are tapping with several fingers, reset the counter
     if (!tap || e.touches.length > 1) {
-      tap = setTimeout(function()  {
+      tap = setTimeout(() => {
         tap = null;
       }, 300);
     }
@@ -139,7 +139,7 @@ function addCountryEvents(country, tag, flag)  {
     if (e.touches.length === 1) {
      // e.preventDefault();
 
-      var touch = e.touches[0];
+      let touch = e.touches[0];
       tag.style.left = `${touch.clientX - 150}px`;
       tag.style.top = `${touch.clientY - 150}px`;
       tag.classList.remove('hidden');
@@ -149,7 +149,7 @@ function addCountryEvents(country, tag, flag)  {
   });
 
   // 'touchend' handles the end of a touch (hide tag)
-  country.addEventListener('touchend', function(e)  {
+  country.addEventListener('touchend', (e) => {
     // tag.classList.add('hidden');
     clearTags();
   });
@@ -157,12 +157,12 @@ function addCountryEvents(country, tag, flag)  {
 }
 
 // Helper to convert from (longitude, latitude) to normalized SVG (x,y) coordinates
-function earthToSvg(_lon, _lat)  {
-  var lon = parseFloat(_lon);
-  var lat = parseFloat(_lat);
+const earthToSvg = (_lon, _lat) => {
+  let lon = parseFloat(_lon);
+  let lat = parseFloat(_lat);
 
-  var tx = (lon + 180) / 360;
-  var ty = 1 - (lat + 85) / 170; // Latitudes close to 90 are truncated
+  let tx = (lon + 180) / 360;
+  let ty = 1 - (lat + 85) / 170; // Latitudes close to 90 are truncated
 
   return {
     x: tx,
@@ -170,26 +170,26 @@ function earthToSvg(_lon, _lat)  {
   };
 }
 
-function tagCountries(data)  {
+const tagCountries = (data) => {
   // Get all our country shapes
-  var countries = document.getElementsByTagName('path');
+  let countries = document.getElementsByTagName('path');
 
   // For convenience, let's take the names into a separate array
-  var countryNames = [];
-  for (var i = 0; i < countries.length; ++i) {
+  let countryNames = [];
+  for (let i = 0; i < countries.length; ++i) {
     countryNames.push(countries[i].id);
   }
 
   // Filter our data (flag + coordinates) based on actual matches with our map
-  var matches = data.filter(function(entry) {
+  let matches = data.filter((entry) => {
     return countryNames.includes(entry.name);
   })
 
   // Build a match object for easy dictionary access
-  var matchObj = {};
-  for (var i = 0; i < matches.length; ++i) {
-    var match = matches[i];
-    var entry = {
+  let matchObj = {};
+  for (let i = 0; i < matches.length; ++i) {
+    let match = matches[i];
+    let entry = {
       lat: match.latitude,
       lon: match.longitude,
       flag: match.flag_128
@@ -199,20 +199,20 @@ function tagCountries(data)  {
   }
 
   // Iterate through countries to set them all up
-  for (var i = 0; i < countries.length; ++i) {
+  for (let i = 0; i < countries.length; ++i) {
     // Pick a country
-    var country = countries[i];
+    let country = countries[i];
 
     // Kill Antarctica soz
     if (country.id === "Antarctica") {
-      var group = country.parentNode;
+      let group = country.parentNode;
       group.removeChild(country);
       continue;
     }
 
     // Add coordinate data
-    var countryData = matchObj[country.id];
-    var flag = undefined;
+    let countryData = matchObj[country.id];
+    let flag = undefined;
     // A few regions aren't in the dataset so we check to skip them
     if (countryData) {
       country.dataset.lat = countryData.lat;
@@ -221,11 +221,11 @@ function tagCountries(data)  {
     }
 
     // Create a tag for it
-    var tag = document.createElement('div');
+    let tag = document.createElement('div');
     tag.classList.add('hidden', 'tag-bg', 'tag');
-    var p = document.createElement('p');
+    let p = document.createElement('p');
     p.classList.add('tag-text');
-    var txt = document.createTextNode(country.id);
+    let txt = document.createTextNode(country.id);
     p.appendChild(txt);
     tag.appendChild(p);
     document.body.appendChild(tag);
@@ -236,40 +236,40 @@ function tagCountries(data)  {
 }
 
 // POSTs the journey data to the server to be recorded and displayed
-function postJourney()  {
+const postJourney = () => {
   // ARE WE TESTING A HELL CLIENT??????
-  var testElem = document.getElementById('test');
-  var isTest = testElem.dataset.test === '1';
-  console.log(isTest);
+  let testElem = document.getElementById('test')
+  let isTest = testElem.dataset.test === '1'
+  console.log(isTest)
 
   // Remove leftover null elements from our journey
-  var cleanJourney = journey.filter(function(entry) {
+  let cleanJourney = journey.filter((entry) => {
     return entry !== null;
-  }).map(function(entry) {
-    var country = document.getElementById(entry);
-    var coord = earthToSvg(country.dataset.lon, country.dataset.lat);
+  }).map((entry) => {
+    let country = document.getElementById(entry);
+    let coord = earthToSvg(country.dataset.lon, country.dataset.lat);
     return {
       name: entry,
       lon: country.dataset.lon,
       lat: country.dataset.lat
-    };
+    }
   });
   // ONE COUNTRY IS NOT A JOURNEY GUYS!
   if (cleanJourney.length < 2) {
     return;
   }
   // POST data to the server
-  var data = JSON.stringify(cleanJourney);
-  var numTimes = isTest ? 50 : 1;
-  var postRequest = function() {
-    console.log('sending...');
+  let data = JSON.stringify(cleanJourney);
+  let numTimes = isTest ? 50 : 1;
+  let postRequest = () => {
+    console.log('sending...')
     fetch('/api/submit', {
       body: data,
       headers: {
         'content-type': 'application/json'
       },
       method: 'POST'
-    }).then(function(res) {
+    }).then((res) => {
       // Make sure our submission made it through
       if (res.ok) {
         // Clear our journey once we are done
@@ -278,43 +278,43 @@ function postJourney()  {
           popCountry();
         }
       }
-    });
+    })
   }
 
-  for (var i = 0; i < numTimes; ++i) {
-    postRequest();
+  for (let i = 0; i < numTimes; ++i) {
+    postRequest()
   }
 }
 
 // To test hell clients from the console
-function testHell(n)  {
+const testHell = (n) => {
   // Remove leftover null elements from our journey
-  var cleanJourney = journey.filter(function(entry) {
+  let cleanJourney = journey.filter((entry) => {
     return entry !== null;
-  }).map(function(entry) {
-    var country = document.getElementById(entry);
-    var coord = earthToSvg(country.dataset.lon, country.dataset.lat);
+  }).map((entry) => {
+    let country = document.getElementById(entry);
+    let coord = earthToSvg(country.dataset.lon, country.dataset.lat);
     return {
       name: entry,
       lon: country.dataset.lon,
       lat: country.dataset.lat
-    };
+    }
   });
   // Abort if data is empty!
   if (cleanJourney.length === 0) {
     return;
   }
   // POST data to the server
-  var data = JSON.stringify(cleanJourney);
-  var postRequest = function() {
-    console.log('sending...');
+  let data = JSON.stringify(cleanJourney);
+  let postRequest = () => {
+    console.log('sending...')
     fetch('/api/submit', {
       body: data,
       headers: {
         'content-type': 'application/json'
       },
       method: 'POST'
-    }).then(function(res) {
+    }).then((res) => {
       // Make sure our submission made it through
       if (res.ok) {
         // Clear our journey once we are done
@@ -323,32 +323,32 @@ function testHell(n)  {
           popCountry();
         }
       }
-    });
+    })
   }
 
-  for (var i = 0; i < n; ++i) {
-    postRequest();
+  for (let i = 0; i < n; ++i) {
+    postRequest()
   }
 }
 
-function getPinch(e)  {
+const getPinch = (e) => {
   e.preventDefault();
-  var x1 = e.touches.item(0).screenX;
-  var y1 = e.touches.item(0).screenY;
-  var x2 = e.touches.item(1).screenX;
-  var y2 = e.touches.item(1).screenY;
-  var dx = x2 - x1;
-  var dy = y2 - y1;
+  let x1 = e.touches.item(0).screenX;
+  let y1 = e.touches.item(0).screenY;
+  let x2 = e.touches.item(1).screenX;
+  let y2 = e.touches.item(1).screenY;
+  let dx = x2 - x1;
+  let dy = y2 - y1;
 
-  var px1 = touchBuffer[0].screenX;
-  var py1 = touchBuffer[0].screenY;
-  var px2 = touchBuffer[1].screenX;
-  var py2 = touchBuffer[1].screenY;
-  var pdx = px2 -px1;
-  var pdy = py2 - py1;
+  let px1 = touchBuffer[0].screenX;
+  let py1 = touchBuffer[0].screenY;
+  let px2 = touchBuffer[1].screenX;
+  let py2 = touchBuffer[1].screenY;
+  let pdx = px2 -px1;
+  let pdy = py2 - py1;
 
-  var dist = Math.sqrt(dx*dx + dy*dy);
-  var pdist = Math.sqrt(pdx*pdx + pdy*pdy);
+  let dist = Math.sqrt(dx*dx + dy*dy);
+  let pdist = Math.sqrt(pdx*pdx + pdy*pdy);
 
   return {
     scale: dist/pdist,
@@ -357,16 +357,16 @@ function getPinch(e)  {
   };
 }
 
-function getSlideDelta(e)  {
+const getSlideDelta = (e) => {
   // e.preventDefault();
 
-  var x = e.touches.item(0).screenX;
-  var y = e.touches.item(0).screenY;
-  var px = touchBuffer[0].screenX;
-  var py = touchBuffer[0].screenY;
+  let x = e.touches.item(0).screenX;
+  let y = e.touches.item(0).screenY;
+  let px = touchBuffer[0].screenX;
+  let py = touchBuffer[0].screenY;
 
-  var dx = x - px;
-  var dy = y - py;
+  let dx = x - px;
+  let dy = y - py;
 
   return {
     x: dx,
@@ -374,18 +374,18 @@ function getSlideDelta(e)  {
   };
 }
 
-var touchBuffer = [];
-var mapScale = 1;
-var scaleBuffer;
-var pinchCenter= {
+let touchBuffer = [];
+let mapScale = 1;
+let scaleBuffer;
+let pinchCenter= {
   x: 1, y: 1,
   xp: 0, yp: 0
 }
-var xPos = 0, yPos = 0;
-var xBuf = 0, yBuf = 0;
-var w = 0, h = 0;
+let xPos = 0, yPos = 0;
+let xBuf = 0, yBuf = 0;
+let w = 0, h = 0;
 
-function resetView() {
+const resetView = () => {
   mapScale = 1;
   scaleBuffer = 1;
   xPos = 0;
@@ -393,106 +393,106 @@ function resetView() {
   yPos = 0;
   yBuf = 0;
 
-  var map = document.getElementById('map-container');
-  map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
+  let map = document.getElementById('map-container')
+    map.style.transform = `translateX(${xPos}px) translateY(${yPos}px) scale(${mapScale})`;
 }
 
-function scaleStrokes(scale)  {
-  var countries = document.getElementsByTagName('path');
-  var countryList = Array.from(countries);
+const scaleStrokes = (scale) => {
+  let countries = document.getElementsByTagName('path');
+  let countryList = Array.from(countries);
 
-  countryList.forEach(function(country)  {
+  countryList.forEach((country) => {
     country.style.strokeWidth = 1/scale;
   });
 }
 
 // Because events are weird so let's brute force this thing
-function clearTags()  {
-  var tags = document.getElementsByClassName('tag');
-  var tagList = Array.from(tags);
+const clearTags = () => {
+  let tags = document.getElementsByClassName('tag')
+  let tagList = Array.from(tags)
 
-  tagList.forEach(function(tag)  {
-    tag.classList.add('hidden');
+  tagList.forEach((tag) => {
+    tag.classList.add('hidden')
   })
 }
 
 // Phones phones phones
-function isLandscape()  {
-  return window.innerWidth > window.innerHeight;
+const isLandscape = () => {
+  return window.innerWidth > window.innerHeight
 }
 
 // Generate a large JSON file to test the display app
-function downloadTest(n, m = 9)  {
-  var numJourneys = n;
-  var numCountries =  m <= 9 ? (m > 1 ? m : 3) : 9;
+const downloadTest = (n, m = 9) => {
+  let numJourneys = n;
+  let numCountries =  m <= 9 ? (m > 1 ? m : 3) : 9;
 
-  var countries = document.getElementsByTagName('path');
-  countries = Array.from(countries);
-  var result = [];
-  for (var i = 0; i < numJourneys; ++i) {
-    var journey = [];
-    for (var j = 0; j < numCountries; ++j) {
-      var country = countries[Math.floor(Math.random()*countries.length)];
-      var entry = {
+  let countries = document.getElementsByTagName('path')
+  countries = Array.from(countries)
+  let result = []
+  for (let i = 0; i < numJourneys; ++i) {
+    let journey = []
+    for (let j = 0; j < numCountries; ++j) {
+      let country = countries[Math.floor(Math.random()*countries.length)]
+      let entry = {
         name: country.id,
         lon: country.dataset.lon,
         lat: country.dataset.lat
-      };
-      journey.push(entry);
+      }
+      journey.push(entry)
     }
-    result.push(journey);
+    result.push(journey)
   }
 
-  var data = JSON.stringify(result);
-  var dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(data)}`;
-  var elem = document.getElementById('download');
-  elem.setAttribute('href', dataStr);
-  elem.setAttribute('download', 'test.json');
-  elem.click();
+  let data = JSON.stringify(result)
+  let dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(data)}`
+  let elem = document.getElementById('download')
+  elem.setAttribute('href', dataStr)
+  elem.setAttribute('download', 'test.json')
+  elem.click()
 }
 
-document.addEventListener('DOMContentLoaded', function()  {
-  console.log(isLandscape());
+document.addEventListener('DOMContentLoaded', () => {
+  console.log(isLandscape())
   loadData(tagCountries);
 
-  var map = document.getElementById('map-container');
+  let map = document.getElementById('map-container')
 
-  var svg = map.firstChild;
+  let svg = map.firstChild;
 
   w = map.clientWidth;
   h = map.clientHeight;
 
   // Detect orientation change to keep scroll magic working
-  window.addEventListener('orientationchange', function(e)  {
+  window.addEventListener('orientationchange', (e) => {
     w = map.clientWidth;
     h = map.clientHeight;
-  });
+  })
 
   // Disable pinch-zooming on country list
-  var listArea = document.getElementById('list-container');
-  listArea.addEventListener('touchmove', function(e)  {
+  let listArea = document.getElementById('list-container')
+  listArea.addEventListener('touchmove', (e) => {
     if (e.touches.length >= 2) {
-      e.preventDefault();
+      e.preventDefault()
     }
-  });
+  })
 
-  map.addEventListener('touchstart', function(e)  {
+  map.addEventListener('touchstart', (e) => {
     touchBuffer = [];
-    for (var i = 0; i < e.touches.length; ++i) {
+    for (let i = 0; i < e.touches.length; ++i) {
       touchBuffer.push(e.touches[i]);
     }
 
-    // var t = e.touches[0];
+    // let t = e.touches[0];
     // console.log(`(${t.clientX}, ${t.clientY})`)
     if (e.touches.length === 2) {
-      var pinch = getPinch(e);
+      let pinch = getPinch(e);
       pinchCenter = {
         x: pinch.x,
         y: pinch.y
-      };
+      }
     }
-  });
-  map.addEventListener('touchend', function(e)  {
+  })
+  map.addEventListener('touchend', (e) => {
     mapScale = scaleBuffer;
     if (e.touches.length === 0) {
       clearTags();
@@ -500,17 +500,17 @@ document.addEventListener('DOMContentLoaded', function()  {
       yPos = yBuf;
       touchBuffer = [];
     }
-  });
-  map.addEventListener('touchmove', function(e)  {
+  })
+  map.addEventListener('touchmove', (e) => {
     if (e.touches.length >= 2) {
-      var pinch = getPinch(e);
-      var scale = pinch.scale;
+      let pinch = getPinch(e);
+      let scale = pinch.scale;
       scaleBuffer = mapScale*scale;
 
       scaleBuffer = scaleBuffer > 1 ? scaleBuffer : 1;
 
-      var dx = pinch.x - pinchCenter.x;
-      var dy = pinch.y - pinchCenter.y;
+      let dx = pinch.x - pinchCenter.x;
+      let dy = pinch.y - pinchCenter.y;
 
       xBuf = xPos + dx;
       yBuf = yPos + dy;
@@ -519,10 +519,10 @@ document.addEventListener('DOMContentLoaded', function()  {
       // yBuf = (pinch.y)*(scaleBuffer-1)/2;
 
       // MATH SORCERY I ONLY HALF UNDERSTAND
-      var upperX = w*(scaleBuffer-1)/2;
-      var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
-      var upperY = h*(scaleBuffer-1)/(2);
-      var lowerY = -upperY;
+      let upperX = w*(scaleBuffer-1)/2;
+      let lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
+      let upperY = h*(scaleBuffer-1)/(2);
+      let lowerY = -upperY;
 
       if (xBuf < lowerX) {
         xBuf = lowerX;
@@ -539,16 +539,16 @@ document.addEventListener('DOMContentLoaded', function()  {
 
       scaleStrokes(scaleBuffer);
     } else {
-      var delta = getSlideDelta(e);
+      let delta = getSlideDelta(e);
 
       xBuf = xPos + delta.x;
       yBuf = yPos + delta.y;
 
       // MATH SORCERY I ONLY HALF UNDERSTAND
-      var upperX = w*(scaleBuffer-1)/2;
-      var lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
-      var upperY = h*(scaleBuffer-1)/(2);
-      var lowerY = -upperY;
+      let upperX = w*(scaleBuffer-1)/2;
+      let lowerX = isLandscape() ? -w*(scaleBuffer-1)/2 : 0; // No clue why this is needed but it fixes landscape so yeah
+      let upperY = h*(scaleBuffer-1)/(2);
+      let lowerY = -upperY;
 
       if (xBuf < lowerX) {
         xBuf = lowerX;
@@ -565,5 +565,5 @@ document.addEventListener('DOMContentLoaded', function()  {
     }
     map.style.transform = `translateX(${xBuf}px) translateY(${yBuf}px) scale(${scaleBuffer})`;
 
-  });
-});
+  })
+})
