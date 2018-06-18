@@ -4,7 +4,7 @@ import oscP5.*;
 import codeanticode.syphon.*;
 import http.requests.*;
 
-//SyphonServer server; // Uncomment on Mac to enable Syphon
+SyphonServer server; // Uncomment on Mac to enable Syphon
 OscP5 osc;
 NetAddress remote;
 
@@ -107,7 +107,7 @@ void draw() {
   }
 
   // Send image data through Syphon!
-  //server.sendScreen(); // Uncomment on Mac to enable Syphon
+  server.sendScreen(); // Uncomment on Mac to enable Syphon
 }
 
 void mousePressed() {
