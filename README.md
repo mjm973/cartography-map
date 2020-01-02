@@ -16,6 +16,8 @@ To get the Map applications on your computer, download this repository or clone 
 $ git clone https://github.com/mjm973/cartography-map.git
 ```
 
+- Note: Cloning from the command line has the advantage of allowing updates without needing to re-download the entire repository.
+
 Then, make sure Node is installed on the computer running the map. If not, install node from their [website](https://nodejs.org), or using Homebrew from the terminal:
 
 ```bash
@@ -69,6 +71,16 @@ fullScreen(P2D); // Uncomment for fullscreen
 ```
 
 Finally, run it or build it! To run, press the run button! To build an executable, the dropdown menu should have an `Export Application...` option that should do the trick.
+
+### Updating
+
+- Note: If the computer doesn't have the project on it, or if it was downloaded as a .zip file (instead of cloned), you'll have to follow the instructions above and start from scratch.
+
+To update an existing project folder, pull the GitHub repository with the following command:
+
+```bash
+$ git pull origin master
+```
 
 ## API Use
 
