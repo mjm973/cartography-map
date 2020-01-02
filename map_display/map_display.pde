@@ -1,10 +1,10 @@
 import netP5.*;
 import oscP5.*;
 
-import codeanticode.syphon.*;
+import codeanticode.syphon.*; // UNCOMMENT
 import http.requests.*;
 
-SyphonServer server; // Uncomment on Mac to enable Syphon
+SyphonServer server; // Uncomment on Mac to enable Syphon UNCOMMENT
 OscP5 osc;
 NetAddress remote;
 
@@ -80,8 +80,8 @@ float minLat = -90;
 boolean panic = false; // Flip to true to engage preset override
 
 void setup() {
-  size(1200, 600, P2D); // Uncomment for windowed/debug
-  //fullScreen(P2D); // Uncomment for fullscreen
+  //size(1200, 600, P2D); // Uncomment for windowed/debug
+  fullScreen(P2D); // Uncomment for fullscreen
 
   // Map and data loading and setup
   setupMap();
@@ -106,7 +106,7 @@ void draw() {
     requestSync();
   }
 
-  // Send image data through Syphon!
+  // Send image data through Syphon! UNCOMMENT
   server.sendScreen(); // Uncomment on Mac to enable Syphon
 }
 

@@ -3,6 +3,8 @@ var journey = []; // Keeps track of the countries selected to be sent to the ser
 var yScale = 1.4125;
 var pz; // Handles panning and zooming (thanks js libraries)
 
+var g_countryList;
+
 // Checks if we have less than the maximum number of countries
 function tooManyCountries() {
   var realList = journey.filter(function(c) {
@@ -405,12 +407,12 @@ function resetView() {
 
 // Use pinchzoom's data to scale SVG strokes
 function scaleStrokes(pz)  {
-  var countries = document.getElementsByTagName('path');
-  var countryList = Array.from(countries);
+  // var countries = document.getElementsByTagName('path');
+  // var countryList = Array.from(countries);
 
   var scale = pz.getTransform().scale;
 
-  countryList.forEach(function(country)  {
+  g_countryList.forEach(function(country)  {
     country.style.strokeWidth = 1/scale;
   });
 }
@@ -496,10 +498,10 @@ document.addEventListener('DOMContentLoaded', function()  {
   var svgGroup = document.getElementById('ne_countries');
   pz = panzoom(map, {
     minZoom: 1,
-    maxZoom: 20,
+    maxZoom: 200,
     zoomDoubleClickSpeed: 1,
     smoothScroll: false,
-    zoomSpeed: 0.1,
+    zoomSpeed: 0.2,
     bounds: {
       left: 0,
       right: w,
@@ -629,3 +631,9 @@ document.addEventListener('DOMContentLoaded', function()  {
   //
   // });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Cache country element list instead of querying every time we zoom
+  var countries = document.getElementsByTagName('path');
+  g_countryList = Array.from(countries);
+})

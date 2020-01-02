@@ -1,7 +1,7 @@
 // Loads the map SVG and initializes our data structures
 void setupMap() {
   // Load map
-  map = loadShape("countries_lowres.svg");
+  map = loadShape("countries_spliced.svg");
 
   // Create our hashmap of countries
   countries = new HashMap<String, Country>();
@@ -48,8 +48,8 @@ void loadOverride() {
 
 // Initializes Syphon and OSC communications
 void setupComms() {
-  // create Syphon server
-  server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
+  // create Syphon server UNCOMMENT
+  //server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
 
   // Set up OSC Communication
   osc = new OscP5(this, oscPort);
