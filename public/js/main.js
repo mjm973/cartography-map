@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function()  {
     maxZoom: 200,
     zoomDoubleClickSpeed: 1,
     smoothScroll: false,
-    zoomSpeed: 0.2,
+    zoomSpeed: 0.1,
     bounds: {
       left: 0,
       right: w,
