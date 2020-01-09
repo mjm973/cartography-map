@@ -49,7 +49,7 @@ void loadOverride() {
 // Initializes Syphon and OSC communications
 void setupComms() {
   // create Syphon server UNCOMMENT
-  //server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
+  server = new SyphonServer(this, "Cartography"); // uncomment on Mac to enable Syphon
 
   // Set up OSC Communication
   osc = new OscP5(this, oscPort);
