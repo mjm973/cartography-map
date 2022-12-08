@@ -9,7 +9,7 @@
   "author": "Mateo Juvera Molina",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "panzoom": "^4.5.0",
     "pug": "^2.0.3",
     "serve-favicon": "^2.5.0"
